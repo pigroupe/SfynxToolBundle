@@ -10,89 +10,70 @@ parameters:
 
 services:
     #
-    # configuration of the Twig and Template
-    #  
-    sfynx.tool.twig:
-        class: %twig.class%
-        calls:
-             - [ addGlobal, ['app', '@templating.globals'] ]
-             
-    #
     # configuration of the twig extensions
-    #               
+    #
     twig.extension.text:
        class: Twig_Extensions_Extension_Text
        tags:
-           - { name: twig.extension }
- 
+           - { name: 'twig.extension' }
+
     twig.extension.intl:
        class: Twig_Extensions_Extension_Intl
        tags:
-           - { name: twig.extension }
- 
-    debug.twig.extension:
-        class: Twig_Extensions_Extension_Debug
-        tags: 
-           - { name: 'twig.extension' }     
-           
+           - { name: 'twig.extension' }
+
     twig.extension.loader:
-        class:        Twig_Extension_StringLoader
+        class: Twig_Extension_StringLoader
         tags:
            - { name: 'twig.extension' }
-           
-    twig.extension.stringloader:
-        class: Twig_Loader_String
-        tags:
-           - { name: twig.loader } 
-           
+
     #
     # configuration of the sfynx extensions
-    #         
+    #
     sfynx.tool.twig.extension.forward:
-        class: %sfynx.tool.twig.extension.forward.class%
+        class: '%sfynx.tool.twig.extension.forward.class%'
         arguments: ['@service_container']
         tags:
-            - { name: twig.extension }
-            
+            - { name: 'twig.extension' }
+
     sfynx.tool.twig.extension.service:
-        class: %sfynx.tool.twig.extension.service.class%
+        class: '%sfynx.tool.twig.extension.service.class%'
         arguments: ['@service_container']
         tags:
-            - { name: twig.extension }               
-            
+            - { name: 'twig.extension' }
+
     sfynx.tool.twig.extension.jquery:
-        class: %sfynx.tool.twig.extension.jquery.class%
-        arguments: ['@service_container']
+        class: '%sfynx.tool.twig.extension.jquery.class%'
+        arguments: ['@service_container', '@translator']
         tags:
-            - { name: twig.extension }
+            - { name: 'twig.extension' }
 
     sfynx.tool.twig.extension.date:
-        class: %sfynx.tool.twig.extension.date.class%
+        class: '%sfynx.tool.twig.extension.date.class%'
         arguments: ['@service_container']
         tags:
-            - { name: twig.extension }
-            
+            - { name: 'twig.extension' }
+
     sfynx.tool.twig.extension.tool:
-        class: %sfynx.tool.twig.extension.tool.class%
+        class: '%sfynx.tool.twig.extension.tool.class%'
         arguments: ['@service_container']
         tags:
-            - { name: twig.extension }
-            
+            - { name: 'twig.extension' }
+
     sfynx.tool.twig.extension.route:
-        class: %sfynx.tool.twig.extension.route.class%
+        class: '%sfynx.tool.twig.extension.route.class%'
         arguments: ['@service_container']
         tags:
-            - { name: twig.extension }  
-            
+            - { name: 'twig.extension' }
+
     sfynx.tool.twig.extension.form:
-        class: %sfynx.tool.twig.extension.form.class%
+        class: '%sfynx.tool.twig.extension.form.class%'
         arguments: ['@service_container']
         tags:
-            - { name: twig.extension }             
-            
+            - { name: 'twig.extension' }
+
     sfynx.tool.twig.extension.layouthead:
-        class: %sfynx.tool.twig.extension.layouthead.class%
+        class: '%sfynx.tool.twig.extension.layouthead.class%'
         arguments: ['@service_container']
         tags:
-            - { name: twig.extension }   
-            
+            - { name: 'twig.extension' }

@@ -20,7 +20,7 @@ namespace Sfynx\ToolBundle\Util;
 use Sfynx\ToolBundle\Builder\PiConfigManagerBuilderInterface;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Sfynx\ToolBundle\Exception\ExtensionException;
+use Sfynx\CoreBundle\Layers\Infrastructure\Exception\ExtensionException;
 
 /**
  * Configuration service of the CMF system
@@ -35,24 +35,24 @@ use Sfynx\ToolBundle\Exception\ExtensionException;
  * @link       http://opensource.org/licenses/gpl-license.php
  * @since      2015-02-16
  */
-class PiConfigManager implements PiConfigManagerBuilderInterface 
-{    
+class PiConfigManager implements PiConfigManagerBuilderInterface
+{
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
-    
+
     /**
      * Invoked to modify the controller that should be executed.
      *
      * @param FilterControllerEvent $event The event
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     public function onKernelRequest($event){
     	return;
-    }    
-    
+    }
+
     /**
      * Constructor.
      *
@@ -62,9 +62,9 @@ class PiConfigManager implements PiConfigManagerBuilderInterface
     {
         $this->container = $container;
     }
-        
+
      /**
-     * 
+     *
      * @param string $container
      * @param string $type
      * @param array $options
@@ -76,10 +76,10 @@ class PiConfigManager implements PiConfigManagerBuilderInterface
      */
     public function setConfig($container, $type, array $options = null, $order = 'prepend')
     {
-        if (!is_null($options) && (count($options) > 0)) {
+        if (!(null === $options) && (count($options) > 0)) {
             if (
-                !isset($GLOBALS[ $container ]) 
-                || 
+                !isset($GLOBALS[ $container ])
+                ||
                 !isset($GLOBALS[ $container ][ $type ])
             ) {
                 $GLOBALS[ $container ][ $type ] = array();
@@ -87,12 +87,12 @@ class PiConfigManager implements PiConfigManagerBuilderInterface
             if ( isset($GLOBALS[ $container ][ $type ]) && (count($GLOBALS[ $container ][ $type ]) >= 1) ) {
                 if ($order == 'append') {
                     $GLOBALS[ $container ][ $type ] = array_merge($GLOBALS[ $container ][ $type ], $options);
-                } else {                    
+                } else {
                     $GLOBALS[ $container ][ $type ] = array_merge($options, $GLOBALS[ $container ][ $type ]);
                 }
             } else {
                 $GLOBALS[ $container ][ $type ] = $options;
             }
         }
-    }        
+    }
 }

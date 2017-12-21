@@ -25,7 +25,7 @@ class PiServiceExtension extends \Twig_Extension
 {
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */    
+     */
     private $container;
 
     /**
@@ -37,7 +37,7 @@ class PiServiceExtension extends \Twig_Extension
     {
         $this->container = $container;
     }
-    
+
     /**
      * Returns the name of the extension.
      *
@@ -48,8 +48,8 @@ class PiServiceExtension extends \Twig_Extension
     public function getName()
     {
         return 'sfynx_tool_service_extension';
-    }    
-    
+    }
+
     /**
      * Returns a list of functions to add to the existing list.
      *
@@ -63,17 +63,17 @@ class PiServiceExtension extends \Twig_Extension
      */
     public function getFunctions()
     {
-        return array(
-                'getService'   => new \Twig_Function_Method($this, 'getServiceFunction'),
-                'getParameter' => new \Twig_Function_Method($this, 'getParameterFunction'),
-        );
-    }    
+        return [
+            new \Twig_SimpleFunction('getService', [$this, 'getServiceFunction']),
+            new \Twig_SimpleFunction('getParameter', [$this, 'getParameterFunction']),
+        ];
+    }
 
     /**
      * Returns the service instance given in param.
      *
      * @param string $service The service name
-     * 
+     *
      * @return string
      * @access public
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
@@ -82,11 +82,10 @@ class PiServiceExtension extends \Twig_Extension
     {
         if ($this->container->has($service)) {
             return $this->container->get($service);
-        } else {
-            throw new \InvalidArgumentException("The service given in param isn't register !");
         }
+        throw new \InvalidArgumentException("The service given in param isn't register !");
     }
-    
+
     /**
      * Returns the service instance given in param.
      *
@@ -100,8 +99,7 @@ class PiServiceExtension extends \Twig_Extension
     {
         if ($this->container->hasParameter($name)) {
             return $this->container->getParameter($name);
-        } else {
-            throw new \InvalidArgumentException("The parameter given in param isn't register !");
         }
-    }    
+        throw new \InvalidArgumentException("The parameter given in param isn't register !");
+    }
 }

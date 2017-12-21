@@ -13,9 +13,9 @@
 namespace Sfynx\ToolBundle\Twig\Extension;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
+use Symfony\Component\Translation\TranslatorInterface;
 use Sfynx\ToolBundle\Twig\TokenParser\StyleSheetJqueryTokenParser;
-use Sfynx\ToolBundle\Exception\ServiceException;
+use Sfynx\CoreBundle\Layers\Infrastructure\Exception\ServiceException;
 
 /**
  * Jquery Matrix used in twig
@@ -33,40 +33,35 @@ class PiJqueryExtension extends \Twig_Extension
      * @var int
      * @access  private
      */
-    protected static $_content;    
-    
+    protected static $_content;
+
     /**
      * @var string service name
      */
     private $service;
-        
+
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     * @var ContainerInterface
      */
     protected $container;
-    
+
     /**
-     * @var \Symfony\Component\Locale\Locale
+     * @var TranslatorInterface
      */
-    protected $locale;    
-    
-    /**
-     * @var \Symfony\Component\Translation\Translator
-     */
-    protected $translator;    
-    
+    protected $translator;
+
     /**
      * Constructor.
      *
-     * @param ContainerInterface $container The service container
+     * @param ContainerInterface  $container The service container
+     * @param TranslatorInterface $translator The service translator
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, TranslatorInterface $translator)
     {
         $this->container      = $container;
-        $this->locale         = $this->container->get('request')->getLocale();
-        $this->translator     = $this->container->get('translator');
-    }    
-    
+        $this->translator     = $translator;
+    }
+
     /**
      * Returns the name of the extension.
      *
@@ -78,7 +73,7 @@ class PiJqueryExtension extends \Twig_Extension
     {
         return 'sfynx_tool_jquery_extension';
     }
-        
+
     /**
      * Returns a list of functions to add to the existing list.
      *
@@ -93,11 +88,11 @@ class PiJqueryExtension extends \Twig_Extension
      */
     final public function getFunctions()
     {
-        return array(
-                'renderJquery'  => new \Twig_Function_Method($this, 'FactoryFunction'),
-        );
+        return [
+            new \Twig_SimpleFunction('renderJquery', [$this, 'FactoryFunction']),
+        ];
     }
-    
+
     /**
      * Returns the token parsers
      *
@@ -111,22 +106,22 @@ class PiJqueryExtension extends \Twig_Extension
      */
     final public function getTokenParsers()
     {
-        return array(
-                new StyleSheetJqueryTokenParser($this->getName()),
-        );
-    }    
-    
+        return [
+            new StyleSheetJqueryTokenParser(PiJqueryExtension::class),
+        ];
+    }
+
     /**
      * Callbacks
      */
-    
+
     /**
      * Factory ! We check that the requested class is a valid service.
      *
      * @param string $container          name of jquery container.
      * @param string $NameClassValidator name of validator.
      * @param array  $options            validator options.
-     * 
+     *
      * @static
      * @return service
      * @access public
@@ -136,13 +131,13 @@ class PiJqueryExtension extends \Twig_Extension
     {
         if ($this->isServiceSupported($container, $NameServiceValidator))
             return  $this->container->get($this->service)->run($options);
-    } 
-    
+    }
+
     /**
      * execute the jquery service init method.
      *
      * @param string $InfoService service information ex : "contenaireName:NameServiceValidator"
-     * 
+     *
      * @static
      * @return void
      * @access public
@@ -151,27 +146,29 @@ class PiJqueryExtension extends \Twig_Extension
     final public function initJquery($InfoService)
     {
         $infos = explode(":", $InfoService);
-        if (count($infos) <=1) {
+        if (count($infos) <= 1) {
             throw ServiceException::serviceParameterUndefined($InfoService);
         }
-        if (count($infos) ==2) {
-            $container                 = $infos[0];
-            $NameServiceValidator    = $infos[1];
+        if (count($infos) == 2) {
+            $container              = $infos[0];
+            $NameServiceValidator   = $infos[1];
             $options                = null;
         } elseif (count($infos) == 3) {
-            $container                 = $infos[0];
-            $NameServiceValidator    = $infos[1];
+            $container              = $infos[0];
+            $NameServiceValidator   = $infos[1];
             $options                = $infos[2];
-        }        
+        }
+        // TODO
+        //list($container, $NameServiceValidator, $options) = $infos;
         if ($this->isServiceSupported($container, $NameServiceValidator)) {
             $this->container->get($this->service)->init($options);
         }
-    }  
+    }
 
     /**
      * Gets the service name.
      *
-     * @param string $container            name of jquery container.
+     * @param string $container name of jquery container.
      * @param string $NameServiceValidator name of validator.
      *
      * @static
@@ -179,17 +176,18 @@ class PiJqueryExtension extends \Twig_Extension
      * @access public
      * @author Etienne de Longeaux <etienne_delongeaux@hotmail.com>
      */
-    private function isServiceSupported($container, $NameServiceValidator)
+    protected function isServiceSupported($container, $NameServiceValidator)
     {
-        if (!isset($GLOBALS['JQUERY'][strtoupper($container)][strtolower($NameServiceValidator)]))
+        if (!isset($GLOBALS['JQUERY'][strtoupper($container)][strtolower($NameServiceValidator)])) {
             throw ServiceException::serviceGlobaleUndefined(strtolower($NameServiceValidator), 'JQUERY', __CLASS__);
-        elseif (!$this->container->has($GLOBALS['JQUERY'][strtoupper($container)][strtolower($NameServiceValidator)]))
+        } elseif (!$this->container->has($GLOBALS['JQUERY'][strtoupper($container)][strtolower($NameServiceValidator)])) {
             throw ServiceException::serviceNotSupported($GLOBALS['JQUERY'][strtoupper($container)][strtolower($NameServiceValidator)]);
-        else
+        } else {
             $this->service = $GLOBALS['JQUERY'][strtoupper($container)][strtolower($NameServiceValidator)];
-        
+        }
+
         return true;
-    }    
+    }
 
     /**
      * Call the render function of the child class called by service.
@@ -201,22 +199,22 @@ class PiJqueryExtension extends \Twig_Extension
     final public function run($options = null)
     {
         return $this->render($options);
-        
+
         try{
             return $this->render($options);
         } catch (\Exception $e) {
             throw ServiceException::serviceRenderUndefined('JQUERY');
         }
     }
-    protected function render($options = null) {}  
-    
+    protected function render($options = null) {}
+
     /**
      * Return a JS file in the container in links.
      *
      * @param string $content_js   content js value
      * @param string $content_html content html value
      * @param string $path_prefix  prefix repository value
-     * 
+     *
      * @return string
      * @access protected
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
@@ -226,5 +224,5 @@ class PiJqueryExtension extends \Twig_Extension
         return $this->container
                 ->get('sfynx.tool.script_manager')
                 ->renderScript($content_js, $content_html, $path_prefix, $result);
-    } 
+    }
 }

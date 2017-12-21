@@ -34,12 +34,12 @@ interface PiLogManagerInterface
 {
     public function setPath($path);
     public function setName($name);
-    public function setFile($filePath, $mode = 0777);
+    public function setFile($filePath, $mode = null);
     public function setInit($id, $format = "YmdHis", $flag = FILE_APPEND, $path = "");
     public function setErr($err);
     public function setInfo($info);
-    public function setLog($level, $message, array $context = array());
+    public function setLog($level, $message, array $context = []);
     public function clearInfo();
     public function delete();
-    public function save($flag = FILE_APPEND, $mode = 0777);
+    public function save($flag = FILE_APPEND, $mode = null);
 }

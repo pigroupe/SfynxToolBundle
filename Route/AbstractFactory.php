@@ -17,8 +17,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 
-use Sfynx\ToolBundle\Exception\ServiceException;
-use Sfynx\ToolBundle\Exception\ExtensionException;
+use Sfynx\CoreBundle\Layers\Infrastructure\Exception\ServiceException;
+use Sfynx\CoreBundle\Layers\Infrastructure\Exception\ExtensionException;
 use BeSimple\I18nRoutingBundle\Routing\Router;
 use BeSimple\I18nRoutingBundle\Routing\Translator\DoctrineDBALTranslator;
 
@@ -35,28 +35,28 @@ abstract class AbstractFactory
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
-    private $_container;
-    
+    protected $_container;
+
     /**
      * @var \Doctrine\DBAL\Connection
      */
-    private $_connection;
-    
+    protected $_connection;
+
     /**
      * @var \Doctrine\ORM\EntityManager
      */
-    private $_em;    
-    
+    protected $_em;
+
     /**
      * @var \BeSimple\I18nRoutingBundle\Routing\Translator\DoctrineDBALTranslator
      */
-    private $_DoctrineTranslator;    
-    
+    protected $_DoctrineTranslator;
+
     /**
      * @var \BeSimple\I18nRoutingBundle\Routing\Router
      */
-    private $_RouterTranslator;
-        
+    protected $_RouterTranslator;
+
     /**
      * Constructor.
      *
@@ -65,13 +65,13 @@ abstract class AbstractFactory
     public function __construct(ContainerInterface $container)
     {
         $this->_container = $container;
-        
+
         //$services_list =  $this->container->getServiceIds();
         //print_r('<PRE>');
         //print_r(var_dump($services_list));
-        //print_r('</PRE>');        
+        //print_r('</PRE>');
     }
-    
+
     /**
      * Gets the connection service
      *
@@ -88,10 +88,9 @@ abstract class AbstractFactory
     	}
     	if ($this->_connection instanceof Connection) {
     		return $this->_connection;
-    	} else {
-    		throw ServiceException::serviceNotSupported();
-        }
-    }    
+    	}
+  		throw ServiceException::serviceNotSupported();
+    }
 
     /**
      * Sets the connection service.
@@ -102,11 +101,11 @@ abstract class AbstractFactory
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      * @since 2012-02-03
      */
-    private function setConnection()
+    protected function setConnection()
     {
         $this->_connection = $this->getContainer()->get('doctrine.dbal.default_connection');
     }
-    
+
     /**
      * Gets the getDatabasePlatform service of the connexion
      *
@@ -119,8 +118,8 @@ abstract class AbstractFactory
     protected function getDatabasePlatform()
     {
         return $this->getConnection()->getDatabasePlatform();
-    }    
-    
+    }
+
     /**
      * Sets the EntityManager service.
      *
@@ -130,11 +129,11 @@ abstract class AbstractFactory
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      * @since 2012-02-03
      */
-    private function setEntityManager()
+    protected function setEntityManager()
     {
         $this->_em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
     }
-    
+
     /**
      * Gets the EntityManager service
      *
@@ -151,10 +150,9 @@ abstract class AbstractFactory
         }
         if ($this->_em instanceof EntityManager) {
             return $this->_em;
-        } else {
-            throw ServiceException::serviceNotSupported();
         }
-    } 
+        throw ServiceException::serviceNotSupported();
+    }
 
     /**
      * Gets the container instance.
@@ -167,7 +165,7 @@ abstract class AbstractFactory
     protected function getContainer()
     {
         return $this->_container;
-    } 
+    }
 
     /**
      * Sets the DoctrineDBALTranslator service.
@@ -178,11 +176,11 @@ abstract class AbstractFactory
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      * @since 2012-02-03
      */
-    private function setDoctrineTranslator()
+    protected function setDoctrineTranslator()
     {
         $this->_DoctrineTranslator = $this->getContainer()->get('i18n_routing.translator');
     }
-    
+
     /**
      * Gets the DoctrineDBALTranslator service
      *
@@ -199,11 +197,10 @@ abstract class AbstractFactory
         }
         if ($this->_DoctrineTranslator instanceof DoctrineDBALTranslator) {
             return $this->_DoctrineTranslator;
-        } else {
-            throw ServiceException::serviceNotSupported();
         }
+        throw ServiceException::serviceNotSupported();
     }
-    
+
     /**
      * Sets the Router Translator service.
      *
@@ -213,11 +210,11 @@ abstract class AbstractFactory
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      * @since 2012-02-03
      */
-    private function setRouterTranslator()
+    protected function setRouterTranslator()
     {
         $this->_RouterTranslator = $this->getContainer()->get('be_simple_i18n_routing.router');
     }
-    
+
     /**
      * Gets the Router Translator service
      *
@@ -234,10 +231,9 @@ abstract class AbstractFactory
         }
         if ($this->_RouterTranslator instanceof Router) {
             return $this->_RouterTranslator;
-        } else {
-            throw ServiceException::serviceNotSupported();
         }
-    }   
+        throw ServiceException::serviceNotSupported();
+    }
 
     /**
      * Return the token object.
@@ -249,9 +245,9 @@ abstract class AbstractFactory
      */
     protected function getToken()
     {
-        return  $this->_container->get('security.context')->getToken();
-    } 
-    
+        return $this->_container->get('security.token_storage')->getToken();
+    }
+
     /**
      * Return if yes or no the user is UsernamePassword token.
      *
@@ -264,10 +260,9 @@ abstract class AbstractFactory
     {
         if ($this->getToken() instanceof \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken) {
             return true;
-        } else {
-            return false;
         }
-    }    
+        return false;
+    }
 
     /**
      * Return the user permissions.
@@ -281,7 +276,7 @@ abstract class AbstractFactory
     {
         return $this->getToken()->getUser()->getPermissions();
     }
-    
+
     /**
      * Return the user roles.
      *
@@ -293,5 +288,5 @@ abstract class AbstractFactory
     protected function getUserRoles()
     {
         return $this->getToken()->getUser()->getRoles();
-    }    
+    }
 }

@@ -13,7 +13,7 @@
 namespace Sfynx\ToolBundle\Twig\Extension;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Sfynx\ToolBundle\Exception\ServiceException;
+use Sfynx\CoreBundle\Layers\Infrastructure\Exception\ServiceException;
 
 /**
  * Tool Filters and Functions used in twig
@@ -28,7 +28,7 @@ class PiToolExtension extends \Twig_Extension
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
-    
+
     /**
      * Constructor.
      *
@@ -38,7 +38,7 @@ class PiToolExtension extends \Twig_Extension
     {
         $this->container = $container;
     }
-        
+
     /**
      * Returns the name of the extension.
      *
@@ -50,120 +50,120 @@ class PiToolExtension extends \Twig_Extension
     public function getName() {
         return 'sfynx_tool_tool_extension';
     }
-        
+
     /**
      * Returns a list of filters to add to the existing list.
-     * 
+     *
      * <code>
      *  {{ comment.content|html }}
      *  {{ 'pi.page.translation.title'|trans|limite('0', 25) }}
      *  {{ "%s Result"|translate_plural("%s Results", entitiesByMonth|count) }}
-     *  
+     *
      *  <span class="hiddenLink {{ url|obfuscateLink }}">
      *  {{ obfuscateLinkJS('a', 'hiddenLink') }}
-     *  
-     * </code> 
-     * 
+     *
+     * </code>
+     *
      * @return array An array of filters
      * @access public
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     public function getFilters() {
-        return array(
+        return [
 
             // default
-            'php_funct'        => new \Twig_Filter_Method($this, 'phpFilter'),
+            new \Twig_SimpleFilter('php_funct', [$this, 'phpFilter']),
 
             // debug
-            'dump'             => new \Twig_Filter_Method($this, 'dumpFilter'),
-            'print_r'         => new \Twig_Filter_Method($this, 'print_rFilter'),
-            'get_class'     => new \Twig_Filter_Method($this, 'get_classFilter'),
+            new \Twig_SimpleFilter('dump', [$this, 'dumpFilter']),
+            new \Twig_SimpleFilter('print_r', [$this, 'print_rFilter']),
+            new \Twig_SimpleFilter('get_class', [$this, 'get_classFilter']),
 
             // markup
-            'nl2br'         => new \Twig_Filter_Method($this, 'nl2brFilter'),
-            'joinphp'             => new \Twig_Filter_Method($this, 'joinphpFilter'),
+            new \Twig_SimpleFilter('nl2br', [$this, 'nl2brFilter']),
+            new \Twig_SimpleFilter('joinphp', [$this, 'joinphpFilter']),
 
             // escape
-            'htmlspecialchars'     => new \Twig_Filter_Method($this, 'htmlspecialcharsFilter'),
-            'addslashes'         => new \Twig_Filter_Method($this, 'addslashesFilter'),
-            'htmlentities'        => new \Twig_Filter_Method($this, 'htmlentitiesFilter'),
+            new \Twig_SimpleFilter('htmlspecialchars', [$this, 'htmlspecialcharsFilter']),
+            new \Twig_SimpleFilter('addslashes', [$this, 'addslashesFilter']),
+            new \Twig_SimpleFilter('htmlentities', [$this, 'htmlentitiesFilter']),
 
             // text
-            'substr'            => new \Twig_Filter_Method($this, 'substrFilter'),
-            'ucfirst'            => new \Twig_Filter_Method($this, 'ucfirstFilter'),
-            'ucwords'            => new \Twig_Filter_Method($this, 'ucwordsFilter'),
-            'cleanWhitespace'    => new \Twig_Filter_Method($this, 'cleanWhitespaceFilter'),
-            'sanitize'            => new \Twig_Filter_Method($this, 'sanitizeFilter'),    
-            'slugify'            => new \Twig_Filter_Method($this, 'slugifyFilter'),
-            'departement'       => new \Twig_Filter_Method($this, 'departementFilter'),
+            new \Twig_SimpleFilter('substr', [$this, 'substrFilter']),
+            new \Twig_SimpleFilter('ucfirst', [$this, 'ucfirstFilter']),
+            new \Twig_SimpleFilter('ucwords', [$this, 'ucwordsFilter']),
+            new \Twig_SimpleFilter('cleanWhitespace', [$this, 'cleanWhitespaceFilter']),
+            new \Twig_SimpleFilter('sanitize', [$this, 'sanitizeFilter']),
+            new \Twig_SimpleFilter('slugify', [$this, 'slugifyFilter']),
+            new \Twig_SimpleFilter('departement', [$this, 'departementFilter']),
 
-            'limite'            => new \Twig_Filter_Method($this, 'limitecaractereFilter'),
-            'splitText'         => new \Twig_Filter_Method($this, 'splitTextFilter'),
-            'splitHtml'         => new \Twig_Filter_Method($this, 'splitHtmlFilter'),
-            'truncateText'        => new \Twig_Filter_Method($this, 'truncateFilter'),
-            'cutText'            => new \Twig_Filter_Method($this, 'cutTextFilter'),
-            'renderResponse'	=> new \Twig_Filter_Method($this, 'renderResponseFilter'),
+            new \Twig_SimpleFilter('limite', [$this, 'limitecaractereFilter']),
+            new \Twig_SimpleFilter('splitText', [$this, 'splitTextFilter']),
+            new \Twig_SimpleFilter('splitHtml', [$this, 'splitHtmlFilter']),
+            new \Twig_SimpleFilter('truncateText', [$this, 'truncateFilter']),
+            new \Twig_SimpleFilter('cutText', [$this, 'cutTextFilter']),
+            new \Twig_SimpleFilter('renderResponse', [$this, 'renderResponseFilter']),
 
             //array
-            'count'                => new \Twig_Filter_Method($this, 'countFilter'),
-            'reset'                => new \Twig_Filter_Method($this, 'resetFilter'),
-            'steps'                => new \Twig_Filter_Method($this, 'stepsFilter'),
-            'sliceTab'            => new \Twig_Filter_Method($this, 'arraysliceFilter'),
-            'end'                => new \Twig_Filter_Method($this, 'endFilter'),
-            'XmlString2array'    => new \Twig_Filter_Method($this, 'XmlString2arrayFilter'),
-            'orderBy'   		 => new \Twig_Filter_Method($this, 'orderByFilter'),
-            'unset'                => new \Twig_Filter_Method($this, 'unsetFilter'),
+            new \Twig_SimpleFilter('count', [$this, 'countFilter']),
+            new \Twig_SimpleFilter('reset', [$this, 'resetFilter']),
+            new \Twig_SimpleFilter('steps', [$this, 'stepsFilter']),
+            new \Twig_SimpleFilter('sliceTab', [$this, 'arraysliceFilter']),
+            new \Twig_SimpleFilter('end', [$this, 'endFilter']),
+            new \Twig_SimpleFilter('XmlString2array', [$this, 'XmlString2arrayFilter']),
+            new \Twig_SimpleFilter('orderBy', [$this, 'orderByFilter']),
+            new \Twig_SimpleFilter('unset', [$this, 'unsetFilter']),
 
             //translation
-            'translate_plural'    => new \Twig_Filter_Method($this, 'translatepluralFilter'),
-            'pluralize'            => new \Twig_Filter_Method($this, 'pluralizeFilter'),
-            'depluralize'        => new \Twig_Filter_Method($this, 'depluralizeFilter'),
+            new \Twig_SimpleFilter('translate_plural', [$this, 'translatepluralFilter']),
+            new \Twig_SimpleFilter('pluralize', [$this, 'pluralizeFilter']),
+            new \Twig_SimpleFilter('depluralize', [$this, 'depluralizeFilter']),
 
             // cryptage
-            'encrypt'            => new \Twig_Filter_Method($this, 'encryptFilter'),
-            'decrypt'            => new \Twig_Filter_Method($this, 'decryptFilter'),
-            'obfuscateLink'     => new \Twig_Filter_Method($this, 'obfuscateLinkFilter'),
+            new \Twig_SimpleFilter('encrypt', [$this, 'encryptFilter']),
+            new \Twig_SimpleFilter('decrypt', [$this, 'decryptFilter']),
+            new \Twig_SimpleFilter('obfuscateLink', [$this, 'obfuscateLinkFilter']),
 
             // status
-            'status'         => new \Twig_Filter_Method($this, 'statusFilter'),
-        );
+            new \Twig_SimpleFilter('status', [$this, 'statusFilter']),
+        ];
     }
 
     /**
      * Returns a list of functions to add to the existing list.
-     * 
+     *
      * <code>
      *  {{ link(label, path, array('style' = >'width:11px')) }}
      * </code>
-     * 
+     *
      * @return array An array of functions
      * @access public
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
     public function getFunctions() {
-        return array(
+        return [
             // Php Function
-            'file_exists'             => new \Twig_Function_Function('file_exists'),
-            'file_get_contents'       => new \Twig_Function_Function('file_get_contents'),
+            new \Twig_SimpleFunction('file_exists'),
+            new \Twig_SimpleFunction('file_get_contents'),
             //
-            'link'                    => new \Twig_Function_Method($this, 'linkFunction'),
-            'get_img_flag_By_country' => new \Twig_Function_Method($this, 'getImgFlagByCountryFunction'),
-            'get_pattern_by_local'    => new \Twig_Function_Method($this, 'getDatePatternByLocalFunction'),  
-            'clean_name'              => new \Twig_Function_Method($this, 'getCleanNameFunction'),
+            new \Twig_SimpleFunction('link', [$this, 'linkFunction']),
+            new \Twig_SimpleFunction('get_img_flag_By_country', [$this, 'getImgFlagByCountryFunction']),
+            new \Twig_SimpleFunction('get_pattern_by_local', [$this, 'getDatePatternByLocalFunction']),
+            new \Twig_SimpleFunction('clean_name', [$this, 'getCleanNameFunction']),
 
             // cryptage
-            'obfuscateLinkJS'         => new \Twig_Function_Method($this, 'obfuscateLinkFunction'),
-        );
-    }   
-     
-    
+            new \Twig_SimpleFunction('obfuscateLinkJS', [$this, 'obfuscateLinkFunction']),
+        ];
+    }
+
+
     /**
      * Functions
      */
-    
-    
+
+
     /**
      * this function cleans up the filename
      *
@@ -181,15 +181,15 @@ class PiToolExtension extends \Twig_Extension
     	$code_entities_match 	= array( '-' ,'_' ,'.');
     	$code_entities_replace 	= array(' ' ,' ' ,' ');
     	$name = str_replace($code_entities_match, $code_entities_replace, $string);
-    
+
     	return $name;
-    }    
-    
+    }
+
     /**
      * Creating a link.
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     public function linkFunction( $label, $path, $options = array() ) {
         $attributes = '';
         foreach ( $options as $key=>$value ) {
@@ -198,16 +198,16 @@ class PiToolExtension extends \Twig_Extension
 
         return '<a href="' . $path . '"' . $attributes . '>' . $label . '</a>';
     }
-    
+
     /**
      * Return the image flag of a country.
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     public function getImgFlagByCountryFunction($country, $type ="img", $taille="16")
     {
-        $locale                = $this->container->get('request')->getLocale();
-        $all_countries         = $this->container->get('sfynx.tool.string_manager')->allCountries($locale);       
+        $locale                = $this->container->get('request_stack')->getCurrentRequest()->getLocale();
+        $all_countries         = $this->container->get('sfynx.tool.string_manager')->allCountries($locale);
         $all_countries_en     = $this->container->get('sfynx.tool.string_manager')->allCountries("en_GB");
         //
         if (isset($all_countries[strtolower($country)])) {
@@ -217,17 +217,17 @@ class PiToolExtension extends \Twig_Extension
         } else {
             $img_country  = "Default-Flag-".$taille.".png";
             $name_country = $country;
-            $src          = $this->container->getParameter('kernel.http_host') . "/bundles/sfynxtemplate/images/flags/default/Default-flag-".$taille.".png";
+            $src          = $this->container->getParameter('kernel.http_host') . "/bundles/sfynxtemplate/images/flags/default/Default-Flag-".$taille.".png";
         }
         if ($type == "img_counry") {
             return $img_country;
-        } elseif ($type == "name_country") { 
+        } elseif ($type == "name_country") {
             return $name_country;
         } elseif ($type == "balise") {
             return "<img src='{$src}' alt='{$name_country} flag' title='{$name_country} flag'/>";
         }
-    }    
-    
+    }
+
     /**
      * translation of date.
      *
@@ -254,18 +254,17 @@ class PiToolExtension extends \Twig_Extension
         // we return the locale format of the date
         if (isset($dates->{$locale})) {
             return $dates->{$locale};
-        } else {
-            return "dd/MM/yy";  // "MM/dd/yyyy";
         }
+        return "dd/MM/yy";  // "MM/dd/yyyy";
     }
-    
+
     /**
      * parsing translaion js files.
      *
      * @author riad hellal <hellal.riad@gmail.com>
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
-    private function updateCulturesJsFilesFunction($fileName = "")
+    protected function updateCulturesJsFilesFunction($fileName = "")
     {
         if (empty($fileName)) {
             $fileName  = $this->container->getParameter("sfynx.tool.date.cache_file");
@@ -283,22 +282,22 @@ class PiToolExtension extends \Twig_Extension
                 } else {
                     print_r($rout_i18n_files."/".$Entry);exit;
                 }
-                
+
                 $posts[$ln] =  str_replace('m','M',$match[2]);
             }
         }
         fwrite($fp, json_encode($posts));
         fclose($fp);
         closedir($MyDirectory);
-            
+
         return true;
-    }    
-        
-    
+    }
+
+
     /**
      * divers Filters
      */
-    
+
     public function statusFilter($entity)
     {
     	if (is_object($entity)) {
@@ -317,14 +316,14 @@ class PiToolExtension extends \Twig_Extension
     	} elseif (($enabled  == false ) && ($archived == false)) {
             $status = $this->container->get('translator')->trans('pi.grid.action.activation.waiting');
     	}
-    
+
     	return $status;
-    }    
-        
+    }
+
     public function phpFilter($var, $function) {
         return $function($var);
     }
-        
+
     public function joinphpFilter( $objects, $glue = ', ', $lastGlue = null ) {
         null === $lastGlue && $lastGlue = $glue;
         $last = '';
@@ -334,20 +333,20 @@ class PiToolExtension extends \Twig_Extension
 
         return implode($glue, $objects) . $last;
     }
-    
+
     public function dumpFilter($var) {
         var_dump($var);
         return '';
     }
-    
+
     public function print_rFilter($var) {
         return print_r($var, 1);
     }
-    
+
     public function get_classFilter($object) {
-        return get_class($object);        
+        return get_class($object);
     }
-    
+
     public function nl2brFilter($string) {
         return nl2br($string);
     }
@@ -355,36 +354,35 @@ class PiToolExtension extends \Twig_Extension
     public function htmlspecialcharsFilter( $string ) {
         $flags = ENT_COMPAT;
         defined('ENT_HTML5') && $flags |= ENT_HTML5;
-    
+
         return htmlspecialchars($string, $flags, 'UTF-8');
     }
-    
+
     public function htmlentitiesFilter( $string ) {
         $flags = ENT_COMPAT;
         defined('ENT_HTML5') && $flags |= ENT_HTML5;
-        
+
         return htmlentities($string, $flags, 'UTF-8');
     }
-    
+
     public function addslashesFilter( $string ) {
         return addslashes($string);
-    }    
-    
-    public function substrFilter( $string, $first, $last = null){
-        if (is_null($last)) {
-            return substr($string, $first);
-        } else {
-            return substr($string, $first, $last);
-        }
     }
-    
+
+    public function substrFilter( $string, $first, $last = null){
+        if ((null === $last)) {
+            return substr($string, $first);
+        }
+        return substr($string, $first, $last);
+    }
+
     /**
      * array filters
-     */    
+     */
     public function countFilter($array) {
         return count($array);
     }
-    
+
     public function resetFilter($array) {
         reset($array);
         return $array;
@@ -393,65 +391,61 @@ class PiToolExtension extends \Twig_Extension
     public function endFilter($array) {
         end($array);
         return $array;
-    }    
+    }
 
     public function stepsFilter($array, $step) {
-        $count = count($array);        
+        $count = count($array);
         if ($count >= $step){
             reset($array);
             for ($i=1; $i <= $step; $i++) {
                 next($array);
             }
             return current($array);
-        } else {
-            return '';
         }
-    }    
-    
+        return '';
+    }
+
     public function arraysliceFilter($array, $first, $last = null) {
-        if (is_null($last)) {
-            $result = array_slice($array, $first); 
+        if ((null === $last)) {
+            $result = array_slice($array, $first);
         } else {
             $result = array_slice($array, $first, $last);
-        }        
+        }
         if (count($result) >= 1) {
             return $result;
-        } else {
-            return '';
         }
+        return '';
     }
 
     public function XmlString2arrayFilter($string){
         return $this->container->get('sfynx.tool.array_manager')->XmlString2array($string);
     }
-    
+
     public function orderByFilter($objs, $orderMethod, $orderBy = "ASC") {
     	if ($objs instanceof \Doctrine\ORM\PersistentCollection) {
-            $array = array();
+            $array = [];
             foreach ($objs as $obj) {
                 if (method_exists($obj, $orderMethod)) {
                     $array[$obj->$orderMethod()] = $obj;
-                } else {
-                    throw ServiceException::serviceNotConfiguredCorrectly();
                 }
+                throw ServiceException::serviceNotConfiguredCorrectly();
             }
             if ($orderBy == "ASC") {
-                    ksort($array);
+                ksort($array);
             } elseif ($orderBy == "DESC") {
-                    krsort($array);
+                krsort($array);
             }
-    		 
+
             return $array;
-    	} else {
-            throw ServiceException::serviceNotConfiguredCorrectly();
     	}
-    }   
-    
+        throw ServiceException::serviceNotConfiguredCorrectly();
+    }
+
     public function unsetFilter(array $array, array $unset_keys) {
     	foreach ($unset_keys as $key) {
             unset($array[$key]);
     	}
-    	
+
     	return $array;
     }
 
@@ -464,40 +458,37 @@ class PiToolExtension extends \Twig_Extension
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
-    public function renderResponseFilter($content, $params = array())
+    public function renderResponseFilter($content, $params = [])
     {
-        return $this->container->get('twig')->render($content, $params);
-    }    
-    
+        return $this->container->get('twig')->createTemplate($content)->render($params);
+    }
+
     /**
      * translation filters
-     */    
-    public function translatepluralFilter($single, $plural, $number, $domain = "messages") 
+     */
+    public function translatepluralFilter($single, $plural, $number, $domain = "messages")
     {
     	$number = intval($number);
-        if ($number > 1) { 
-            return $this->container->get('translator')->trans(sprintf($plural, $number), array('%s'=>$number), $domain);
-        } else {
-            return $this->container->get('translator')->trans(sprintf($single, $number), array('%s'=>$number), $domain);
+        if ($number > 1) {
+            return $this->container->get('translator')->trans(sprintf($plural, $number), ['%s'=>$number], $domain);
         }
-    }    
-    
+        return $this->container->get('translator')->trans(sprintf($single, $number), ['%s'=>$number], $domain);
+    }
+
     public function pluralizeFilter($string, $number = null) {
         if ($number && ($number == 1)) {
             return $string;
-        } else {
-            return $this->container->get('sfynx.tool.string_manager')->pluralize($string);
         }
-    }    
-    
+        return $this->container->get('sfynx.tool.string_manager')->pluralize($string);
+    }
+
     public function depluralizeFilter($string, $number = null) {
         if ($number && ($number > 1)) {
             return $string;
-        } else {
-            return $this->container->get('sfynx.tool.string_manager')->depluralize($string);
         }
-    }    
-    
+        return $this->container->get('sfynx.tool.string_manager')->depluralize($string);
+    }
+
     /**
      * text filters
      */
@@ -508,15 +499,15 @@ class PiToolExtension extends \Twig_Extension
     public function ucwordsFilter($string) {
         return ucwords($string);
     }
-    
+
     public function cleanWhitespaceFilter($string) {
         return $this->container->get('sfynx.tool.string_manager')->cleanWhitespace($string);
-    }    
-    
+    }
+
     public function sanitizeFilter($string, $force_lowercase = true, $anal = false, $trunc = 100) {
         return $this->container->get('sfynx.tool.string_manager')->sanitize($string, $force_lowercase, $anal, $trunc);
     }
-    
+
     public function slugifyFilter($string) {
         return $this->container->get('sfynx.tool.string_manager')->slugify($string);
     }
@@ -525,7 +516,7 @@ class PiToolExtension extends \Twig_Extension
         $em = $this->container->get('doctrine')->getManager();
         $departement  = $em->getRepository('M1MProviderBundle:Region')
                 ->findOneBy(array('id' => $id));
-        
+
         return $departement;
     }
 
@@ -533,8 +524,8 @@ class PiToolExtension extends \Twig_Extension
     public function limitecaractereFilter($string, $mincara, $nbr_cara) {
         return $this->container->get('sfynx.tool.string_manager')
                 ->LimiteCaractere($string, $mincara, $nbr_cara);
-    }    
-    
+    }
+
     public function splitTextFilter($string){
         return $this->container->get('sfynx.tool.string_manager')
                 ->splitText($string);
@@ -543,20 +534,20 @@ class PiToolExtension extends \Twig_Extension
         return $this->container->get('sfynx.tool.string_manager')
                 ->splitHtml($string);
     }
-    
+
     public function truncateFilter($string, $length = 100, $ending = "...", $exact = false, $html = true) {
         return $this->container->get('sfynx.tool.string_manager')
                 ->truncate($string, $length, $ending, $exact, $html);
-    }    
-    
+    }
+
     public function cutTextFilter($string, $intCesurePos, $otherText = false, $strCaractereCesure = ' ', $intDecrementationCesurePos = 5){
         $HtmlCutter    = $this->container->get('sfynx.tool.string_cut_manager');
         $HtmlCutter->setOptions($string, $intCesurePos, $otherText);
         $HtmlCutter->setParams($strCaractereCesure, $intDecrementationCesurePos);
-        
+
         return $HtmlCutter->run();
     }
-    
+
     /**
      * encrypt string
      *
@@ -566,10 +557,10 @@ class PiToolExtension extends \Twig_Extension
     public function encryptFilter($string, $key = "0A1TG4GO")
     {
         $encryption    = $this->container->get('sfynx.tool.encryption_manager');
-        
+
         return $encryption->encryptFilter($string, $key);
     }
-    
+
     /**
      * decrypt string
      *
@@ -579,10 +570,10 @@ class PiToolExtension extends \Twig_Extension
     public function decryptFilter($string, $key = "0A1TG4GO")
     {
         $encryption    = $this->container->get('sfynx.tool.encryption_manager');
-        
+
         return $encryption->decryptFilter($string, $key);
-    }  
-    
+    }
+
     /**
      * Obfuscate link. SEO worst practice.
      *
@@ -591,10 +582,10 @@ class PiToolExtension extends \Twig_Extension
     public function obfuscateLinkFilter($url, $base16 = "0A12B34C56D78E9F")
     {
         $encryption    = $this->container->get('sfynx.tool.encryption_manager');
-        
+
         return $encryption->obfuscateLinkEncrypt($url, $base16);
-    }    
-    
+    }
+
     /**
      * Obfuscate link JS. SEO worst practice.
      *
@@ -607,7 +598,7 @@ class PiToolExtension extends \Twig_Extension
     public function obfuscateLinkFunction($balise = "a", $class = "hiddenLink", $base16 = "0A12B34C56D78E9F")
     {
     	$encryption    = $this->container->get('sfynx.tool.encryption_manager');
-        
-        return $encryption->obfuscateLinkDecrypt($balise, $class, $base16);                         
-    }        
+
+        return $encryption->obfuscateLinkDecrypt($balise, $class, $base16);
+    }
 }

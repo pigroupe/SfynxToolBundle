@@ -28,7 +28,7 @@ class PiFormExtension extends \Twig_Extension
 {
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */    
+     */
     private $container;
 
     /**
@@ -40,7 +40,7 @@ class PiFormExtension extends \Twig_Extension
     {
         $this->container = $container;
     }
-    
+
     /**
      * Returns the name of the extension.
      *
@@ -51,8 +51,8 @@ class PiFormExtension extends \Twig_Extension
     public function getName()
     {
         return 'sfynx_tool_form_extension';
-    }    
-    
+    }
+
     /**
      * Returns a list of functions to add to the existing list.
      *
@@ -66,11 +66,11 @@ class PiFormExtension extends \Twig_Extension
      */
     public function getFunctions()
     {
-        return array(
-            'group_form_errors'      => new \Twig_Function_Method($this, 'getFormErrors'),
-            'group_form_view_errors' => new \Twig_Function_Method($this, 'getFormViewErrors')
-        );
-    }    
+        return [
+            new \Twig_SimpleFunction('group_form_errors', [$this, 'getFormErrors']),
+            new \Twig_SimpleFunction('group_form_view_errors', [$this, 'getFormViewErrors'])
+        ];
+    }
 
     /**
      * Get all error messages after binding form.
@@ -78,21 +78,21 @@ class PiFormExtension extends \Twig_Extension
      * @param Form   $form
      * @param string $type
      * @param string $delimiter
-     * 	
+     *
      * @return array The list of all the errors
      * @access protected
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     public function getFormErrors(Form $form, $type = 'array', $delimiter = "<br />")
     {
-    	$errors = array();
+    	$errors = [];
     	foreach ($form->getErrors() as $key => $error) {
             if($error->getMessagePluralization() !== null) {
                 $errors[$key] = array(
                     'id'    => $error->getMessage(),
                     'trans' => $this->get('translator')->transChoice(
-                        $error->getMessage(), 
-                        $error->getMessagePluralization(), 
+                        $error->getMessage(),
+                        $error->getMessagePluralization(),
                         $error->getMessageParameters()
                     )
                 );
@@ -101,7 +101,7 @@ class PiFormExtension extends \Twig_Extension
                     'id'    => $error->getMessage(),
                     'trans' => $this->get('translator')->trans($error->getMessage())
                 );
-            }    		
+            }
     	}
     	$all = $form->all();
     	if (is_array($all)) {
@@ -113,20 +113,19 @@ class PiFormExtension extends \Twig_Extension
     	}
     	if ($type == 'array') {
             return $errors;
-     	} else {
-            return PiArrayManager::convertArrayToString($errors, $this->get('translator'), 'pi.form.label.field.', '', $delimiter);
      	}
+        return PiArrayManager::convertArrayToString($errors, $this->get('translator'), 'pi.form.label.field.', '', $delimiter);
     }
-    
+
     /**
      * Displays form errors from the whole form and groups same messages into one.
      * Avoids displaying "Veuillez renseigner les champs en rouge" for each required field.
-     * 
+     *
      * @param FormView $view
-     * 	
+     *
      * @return array The list of all the errors
      * @access public
-     */        
+     */
     public function getFormViewErrors(FormView $view)
     {
         $errors         = array_merge($view->vars['errors'], $this->getAllErrors($view));
@@ -138,7 +137,7 @@ class PiFormExtension extends \Twig_Extension
                 continue;
             }
             if (!isset($uniqueErrors[$error->getMessageTemplate()])) {
-                if (!($error->getMessageTemplate() == 'The captcha is invalid.' 
+                if (!($error->getMessageTemplate() == 'The captcha is invalid.'
                         && isset($uniqueErrors['user.field_required']))
                 ) {
                     $uniqueErrors[$error->getMessageTemplate()] = $error;
@@ -148,22 +147,21 @@ class PiFormExtension extends \Twig_Extension
         if ($setCheeseError) {
              $uniqueErrors['Vous devez choisir au moins un fromage.'] = $setCheeseError;
         }
-
         return array_values($uniqueErrors);
     }
 
     /**
      * Displays form errors from the whole form and groups same messages into one.
      * Avoids displaying "Veuillez renseigner les champs en rouge" for each required field.
-     * 
+     *
      * @param FormView $view
-     * 	
+     *
      * @return array The list of all errors
      * @access private
-     */     
-    private function getAllErrors(FormView $view)
+     */
+    protected function getAllErrors(FormView $view)
     {
-        $errors = array();
+        $errors = [];
         if (count($view) > 0) {
             foreach ($view->children as $name => $child) {
                 $errors = array_merge($errors, $this->getAllErrors($child));
@@ -171,7 +169,6 @@ class PiFormExtension extends \Twig_Extension
 
             return array_merge($view->vars['errors'], $errors);
         }
-
         return $view->vars['errors'];
-    }    
+    }
 }

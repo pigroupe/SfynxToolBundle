@@ -27,12 +27,11 @@ class PiTwigEnvironmentPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        if (false === $container->hasDefinition('sfynx.tool.twig')) {
+        if (false === $container->hasDefinition('pi_app_admin.twig')) {
             return;
         }
+        $definition = $container->getDefinition('pi_app_admin.twig');
 
-        $definition = $container->getDefinition('sfynx.tool.twig');
-        
         // Extensions must always be registered before everything else.
         // For instance, global variable definitions must be registered
         // afterward. If not, the globals from the extensions will never

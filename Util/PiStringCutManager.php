@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of the <Tool> project.
- * 
+ *
  * @category   Tool
  * @package    Util
  * @subpackage Service
@@ -25,7 +25,7 @@ namespace Sfynx\ToolBundle\Util;
  *  $HtmlCutter->setOptions($text, 200);
  *  echo $HtmlCutter->run();
  * </code>
- * 
+ *
  * @category   Tool
  * @package    Util
  * @subpackage Service
@@ -37,80 +37,80 @@ namespace Sfynx\ToolBundle\Util;
  * @since      2015-02-16
  */
 class PiStringCutManager {
-    
+
     /*
     Chaine d'origine
     */
     private $strChaineOrigine;
-    
+
     /*
     Chaine coupée à la longueur donnée
     */
     private $strChaineCoupee;
-    
+
     /*
     Caractère ou doit se faire la césure
     Par défaut, un espace
     */
     private $strCaractereCesure = ' ';
-    
+
     /*
     Messages d'erreur
     */
     private $strErreur;
-    
+
     /*
     Position de la césure
     */
     private $intCesurePos;
-    
+
     /*
      Position du début de la césure
     */
-    private $otherText;    
+    private $otherText;
     private $strChaineotherText = '';
-    
+
     /*
     Position du dernier espace de la chaine coupée
     */
     private $intDernierCaracCesure;
-    
+
     /*
     Valeur de décrémentation de la taille de la chaine si on est dans une balise
     */
     private $intDecrementationCesurePos = 5;
-    
+
     /*
     Indique si la césure est bien faite en dehors d'une balise
     Par défaut on considère qu'elle est effectuée au milieu d'une balise
     */
     private $blnCesureHorsBalise = 0;
-    
+
     /*
     Indique si la chaine est plus courte que la longueur de césure
     Par défaut la chaine est plus longue
     */
     private $blnChaineTropCourte = 0;
-    
+
     /*
     Pile des balises ouvertes
     */
     private $t_strBalisesOuvertes;
-    
+
     public function setOptions($strChaineOrigine, $intCesurePos, $otherText = false) {
         $this->strChaineOrigine = $strChaineOrigine;
         $this->intCesurePos        = $intCesurePos;
         $this->otherText        = $otherText;
     }
-    
+
     public function setParams($strCaractereCesure, $intDecrementationCesurePos) {
         $this->strCaractereCesure             = $strCaractereCesure;
         $this->intDecrementationCesurePos     = $intDecrementationCesurePos;
-    }    
+    }
 
     public function run() {
         $this->VerifierLongueurChaine();
-    
+
         if (!$this->blnChaineTropCourte) {
             $this->ObtenirChaineCoupeeJuste();
             $this->findTags();
@@ -120,36 +120,36 @@ class PiStringCutManager {
         else {
             $strRetour = $this->strChaineOrigine;
         }
-    
+
         if (strlen($this->strErreur) > 2)
             return $this->strErreur;
         else
             return $strRetour;
-    }    
-    
+    }
+
     /*
     Coupe la chaine d'origine au dernier espace avant la longueur voulue
     */
-    private function CutString(){
+    protected function CutString(){
         /* Coupe la chaine à la longuer maximale */
         $this->strChaineCoupee = substr($this->strChaineOrigine, 0, $this->intCesurePos);
         /* Extrait la position du dernier caractère de césure de la chaine coupée */
         $this->intDernierCaracCesure = strrpos($this->strChaineCoupee, $this->strCaractereCesure);
-        
+
         /* Si le caractère de césure a été trouvé */
         if ($this->intDernierCaracCesure)
             /* Coupe la chaine au dernier espace de sa longueur maximale */
             $this->strChaineCoupee = substr($this->strChaineOrigine, 0, $this->intDernierCaracCesure);
-        
+
         if ($this->otherText){
             $this->strChaineotherText = str_replace($this->strChaineCoupee, '', $this->strChaineOrigine);
         }
     }
-    
+
     /*
     Vérifie que la césure n'aie pas été effectuée au milieu d'une balise
     */
-    private function VerifierCesure() {
+    protected function VerifierCesure() {
 
         /* Parcours toute la chaine depuis la fin */
         for($i=strlen($this->strChaineCoupee)-1; $i>=0; $i--) {
@@ -166,18 +166,18 @@ class PiStringCutManager {
                 $this->blnCesureHorsBalise = 0;
                 break;
             }
-            
+
             /* Si c'est le premier caractère de la chaine */
             if ($i==0)
                 /* Alors c'est qu'il n'y avait pas de balises du tout */
                 $this->blnCesureHorsBalise = 1;
         }
     }
-    
+
     /*
     Vérifie que la chaine soit plus longue que la position de césure
     */
-    private function VerifierLongueurChaine(){
+    protected function VerifierLongueurChaine(){
         /* Si la chaine est vide */
         if (strlen($this->strChaineOrigine) == 0)
             /* Indiquer que la chaine est trop courte */
@@ -191,11 +191,11 @@ class PiStringCutManager {
             /* Indiquer que la chaine n'est pas trop courte */
             $this->blnChaineTropCourte = 0;
     }
-    
+
     /*
     Obtient la chaine coupée à un espace en dehors d'une balise
     */
-    private function ObtenirChaineCoupeeJuste() {
+    protected function ObtenirChaineCoupeeJuste() {
         /* Tant que la césure n'est pas effectuée en dehors d'une balise */
         while(!$this->blnCesureHorsBalise) {
             /* Couper la chaine */
@@ -208,27 +208,27 @@ class PiStringCutManager {
             /* Si on a réduit la position de césure au point de couper toute la chaine, on affiche une erreur */
             /* Peut arriver si la position de césure est courte et qu'il y a une très longue balise au début */
             else {
-                $this->strErreur = 'Erreur : la position de la césure est trop courte par rapport à la taille de la chaine.';        
+                $this->strErreur = 'Erreur : la position de la césure est trop courte par rapport à la taille de la chaine.';
                 break;
             }
             $this->VerifierCesure();
         }
     }
-    
-    private function findTags() {
-        
+
+    protected function findTags() {
+
         /* Place toutes les balises ouvrantes dans un tableau */
-        $strBalisesOuvrantes = preg_match_all('|<([a-z]+)[^>]*>|i', $this->strChaineCoupee, $t_strBalisesOuvrantes);        
-        
+        $strBalisesOuvrantes = preg_match_all('|<([a-z]+)[^>]*>|i', $this->strChaineCoupee, $t_strBalisesOuvrantes);
+
         /* Place le résultat dans le tableau de la classe */
         $this->t_strBalisesOuvertes = $t_strBalisesOuvrantes[1];
-        
+
         /* Place toutes les balises fermantes dans un tableau */
-        $strBalisesFermantes = preg_match_all('|</([a-z]+)[^>]*>|i', $this->strChaineCoupee, $t_strBalisesFermantes);    
-        
+        $strBalisesFermantes = preg_match_all('|</([a-z]+)[^>]*>|i', $this->strChaineCoupee, $t_strBalisesFermantes);
+
         /* Inverse le tableau des balises ouvrantes (vu qu'elles doivent se fermer en ordre inverse) */
         $this->t_strBalisesOuvertes = array_reverse($this->t_strBalisesOuvertes);
-        
+
         /* Parcours le tableau des balises fermantes */
         foreach($t_strBalisesFermantes[1] as $Index => $strBaliseFermante) {
             /* Parcours le tableau des balises ouvrantes */
@@ -242,8 +242,8 @@ class PiStringCutManager {
             }
         }
     }
-    
-    private function closeTags() {
+
+    protected function closeTags() {
         /* Pour chaque balise ouverte restante */
         foreach($this->t_strBalisesOuvertes as $strBaliseOuverte)
             /* Ferme la balise */
@@ -254,16 +254,16 @@ class PiStringCutManager {
 /*
 <?
     $page_len=30; //longueur d'une page (en caractères)
-    
+
     //chaîne à diviser en plusieurs pages
     $string="<div>
     azerty<p>
     qsdf,%<b>oiu</b> poi<u>uyt<a href=''>wxcvb 567
     lkjh</a>jhg jhuytrhg kjhkk u ttrrf h.</u>fdsq<br />
     loloploklo
-    
+
     </p></div>a";
-    
+
     //fonctions de division de chaîne
     function callback_empty_tags($in) {
         //echo "'".$in[1]."'|".strlen($in[1])."#";

@@ -47,7 +47,7 @@ use Psr\Log\NullLogger;
 class PiLogManager implements PiLogManagerInterface
 {
    /**
-    * @var \Symfony\Bridge\Monolog\Logger
+    * @var LoggerInterface
     */    
    protected $_logger;
    
@@ -82,7 +82,7 @@ class PiLogManager implements PiLogManagerInterface
     */
    public function __construct($logDir, LoggerInterface $logger = null)
    {
-        $this->_logger    = $logger ?: new NullLogger();     
+        $this->_logger = $logger ?: new NullLogger();
         if ($logDir) {
             $this->setPath($logDir);
         }
@@ -103,7 +103,6 @@ class PiLogManager implements PiLogManagerInterface
         if (!empty($this->_path) && !empty($this->_name)) {
             $this->setFile($this->_path . '/' . $this->_name);
         }
-      
         return $this;
    }
    
@@ -122,7 +121,6 @@ class PiLogManager implements PiLogManagerInterface
         if (!empty($this->_path) && !empty($this->_name)) {
                $this->setFile($this->_path . '/' . $this->_name);
         }
-                      
         return $this;
    }   
    
@@ -136,12 +134,11 @@ class PiLogManager implements PiLogManagerInterface
     * @access public
     * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
     */
-   public function setFile($filePath, $mode = 0777)
+   public function setFile($filePath, $mode = null)
    {
         if (\Sfynx\ToolBundle\Util\PiFileManager::mkdirr(dirname($filePath), $mode)) {
             $this->_file = $filePath;
         }
-           
         return $this;
    }   
 
@@ -191,7 +188,6 @@ class PiLogManager implements PiLogManagerInterface
    {
         $this->_info[] = $info;
         $this->_logger->info($info);
-        
         return $this;
    }
    
@@ -207,8 +203,7 @@ class PiLogManager implements PiLogManagerInterface
    public function setErr($err)
    {
         $this->_info[] = $err;
-        $this->_logger->err($err);
-        
+        $this->_logger->error($err);
         return $this;
    }   
    
@@ -223,16 +218,14 @@ class PiLogManager implements PiLogManagerInterface
     * @access public
     * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
     */
-   public function setLog($level, $message, array $context = array())
+   public function setLog($level, $message, array $context = [])
    {
         $this->_info[] = $info;
         $this->_logger->log($level, $message, $context);
-        
         return $this;
-   }   
-   
-   
-   /**
+   }
+
+    /**
     * Clear the container info.
     *
     * @return PiLogManager
@@ -242,7 +235,6 @@ class PiLogManager implements PiLogManagerInterface
    public function clearInfo()
    {
         $this->_info = null;
-        
         return $this;
    }   
       
@@ -257,19 +249,15 @@ class PiLogManager implements PiLogManagerInterface
    {
         $result = false;
         $dirpath = dirname($this->_file);
-        if (@mkdir("$dirpath", 0777)) {}
-        if (file_exists("$this->_file"))
-        {
+        @mkdir("$dirpath", 0777);
+        if (file_exists("$this->_file")) {
             unlink($path);
             $result = true;
-        } else {
-            $result = false;
         }
         if ($result) {
             return $this;
-        } else {
-            return false;
         }
+        return false;
    }
    
    /**
@@ -282,17 +270,15 @@ class PiLogManager implements PiLogManagerInterface
     * @access public
     * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
     */
-   public function save($flag = FILE_APPEND, $mode = 0777)
+   public function save($flag = FILE_APPEND, $mode = null)
    {
+        $result = false;
         if (\Sfynx\ToolBundle\Util\PiFileManager::mkdirr(dirname($this->_file), $mode)) {
             $result = file_put_contents($this->_file, PHP_EOL.implode("\n", $this->_info), $flag);
-        } else {
-            $result = false;
         }
         if ($result) {
             return $this;
-        } else {
-            return false;
         }
-   }    
+        return false;
+   }
 }

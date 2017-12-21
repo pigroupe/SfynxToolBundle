@@ -120,6 +120,21 @@ class PiStringManager implements PiStringManagerBuilderInterface
     
         return $valeurFiltree;
     }
+
+    /**
+     * @param string $string
+     *
+     * @return string
+     */
+    public static function canonicalize($string)
+    {
+        $encoding = mb_detect_encoding($string);
+        $result = $encoding
+            ? mb_convert_case($string, MB_CASE_LOWER, $encoding)
+            : mb_convert_case($string, MB_CASE_LOWER);
+
+        return $result;
+    }
     
     /**
      * Splits a html string in order to all <p> tag and returns it in two parts.
@@ -308,26 +323,26 @@ class PiStringManager implements PiStringManagerBuilderInterface
      */
     public static function closetags($string)
     {
-        $arr_single_tags = array('meta','img','br','link','area');
-        
-        // We put all opened tags into an array.
-           preg_match_all('#<([a-z]+)(?: .*)?(?<![/|/ ])>#iU', $string, $result);
-        $openedtags = $result[1];
-         
-        // We put all closed tags into an array.
-           preg_match_all('#</([a-z]+)>#iU', $string, $result);
-     
-           $closedtags = $result[1];
-           $len_opened = count($openedtags);
-     
-           // if all tags are closed
-           if (count($closedtags) == $len_opened)
-               return $string;
-     
-           $openedtags = array_reverse($openedtags);
-     
-           // close tags
-           for ($i=0; $i < $len_opened; $i++){
+       $arr_single_tags = array('meta','img','br','link','area');
+
+       // We put all opened tags into an array.
+       preg_match_all('#<([a-z]+)(?: .*)?(?<![/|/ ])>#iU', $string, $result);
+       $openedtags = $result[1];
+
+       // We put all closed tags into an array.
+       preg_match_all('#</([a-z]+)>#iU', $string, $result);
+
+       $closedtags = $result[1];
+       $len_opened = count($openedtags);
+
+       // if all tags are closed
+       if (count($closedtags) == $len_opened)
+           return $string;
+
+       $openedtags = array_reverse($openedtags);
+
+       // close tags
+       for ($i=0; $i < $len_opened; $i++) {
           if (!in_array($openedtags[$i],$arr_single_tags)){
               if (!in_array($openedtags[$i], $closedtags)){
                   if ($next_tag = $openedtags[$i+1]){
@@ -337,8 +352,8 @@ class PiStringManager implements PiStringManagerBuilderInterface
                   }
               }
           }
-          }     
-           return $string;
+       }
+       return $string;
     }    
 
     /**
@@ -424,9 +439,8 @@ class PiStringManager implements PiStringManagerBuilderInterface
     {
         if (substr($string, 0, strlen($replace)) == $replace) {
             return substr($string, strlen($replace));
-        } else {
-            return $string;
         }
+        return $string;
     }
     
     /**
@@ -467,20 +481,16 @@ class PiStringManager implements PiStringManagerBuilderInterface
     {
         //create the URL
         $bitly = 'http://api.bit.ly/shorten?version='.$version.'&longUrl='.urlencode($url).'&login='.$login.'&apiKey='.$appkey.'&format='.$format;
-         
         //get the url
         //could also use cURL here        
         try {
             $response = file_get_contents($bitly);
-                
             //parse depending on desired format
             if (strtolower($format) == 'json')
             {
                 $json = @json_decode($response,true);
                 return $json['results'][$url]['shortUrl'];
-            }
-            else //xml
-            {
+            } else {//xml
                 $xml = simplexml_load_string($response);
                 return 'http://bit.ly/'.$xml->results->nodeKeyVal->hash;
             }
@@ -714,7 +724,7 @@ class PiStringManager implements PiStringManagerBuilderInterface
                 , json_encode($array));
         
         $json     = str_replace("&", "$$$", $json);
-        $json     = str_replace('\\', "@@", $json);
+//        $json     = str_replace('\\', "@@", $json);
         $json    = mb_convert_encoding($json, "UTF-8", "HTML-ENTITIES");
         
         return $json;
@@ -844,7 +854,7 @@ class PiStringManager implements PiStringManagerBuilderInterface
         $new_arr=array();    
         for($i=0;$i<=(count($arr)-1);$i++) {
             $first_letter_withoutaccent = substr(self::withoutaccent($arr[$i]['label'], $e), 0, 1);
-            $fst_letter_withoutaccent    = self::withoutaccent($fst, $e);   
+            $fst_letter_withoutaccent = self::withoutaccent($fst, $e);
             if (strcasecmp($first_letter_withoutaccent, $fst_letter_withoutaccent)  == 0) {
                 $new_arr[] = $arr[$i]['label'];
             }
@@ -1208,9 +1218,8 @@ class PiStringManager implements PiStringManagerBuilderInterface
         //        
         if (isset($stopwords[$locale]) && !empty($stopwords[$locale])) {
             return $stopwords[$locale];
-        } else {
-            return false;
         }
+        return false;
     }
     
     /**

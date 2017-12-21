@@ -20,11 +20,11 @@ use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Command to parse all routes
- * 
+ *
  * <code>
  *         php app/console sfynx:routes:parse
  * </code>
- * 
+ *
  * @subpackage   Tool
  * @package    Command
  * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
@@ -35,7 +35,7 @@ class RoutesCommand extends ContainerAwareCommand
      * @var \Sfynx\ToolBundle\Util\PiLogManager
      */
     private $_logger;
-    
+
     /**
      * Constructor.
      *
@@ -46,22 +46,22 @@ class RoutesCommand extends ContainerAwareCommand
     public function __construct($kernel = null)
     {
         parent::__construct();
-    
+
         //-----we initialize the container-----
-        if (is_object($kernel) 
+        if (is_object($kernel)
                 && method_exists($kernel, 'getContainer')
         ) {
             $this->setContainer($kernel->getContainer());
         }
     }
-    
+
     /**
      * configure the command.
      *
      * @return void
      * @access protected
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     protected function configure()
     {
         $this
@@ -83,7 +83,7 @@ EOT
      * @return void
      * @access protected
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         //-----we initialize the logger-----
@@ -91,7 +91,7 @@ EOT
         $this->_logger->setPath($this->getContainer()->getParameter("kernel.logs_dir"));
         $this->_logger->setInit('log_userbundle_route', date("YmdH"));
         $this->_logger->setInfo(date("Y-m-d H:i:s")." [LOG ROUTE] Begin launch  :");
-                
+
         foreach ($this->getAllRoutes() as $name => $route){
             $output->writeln(sprintf('<comment>></comment> <info>parsing route : </info>'));
 //            $output->writeln(sprintf('<info>pattern            %s </info>', $route->getPattern() ));
@@ -108,21 +108,21 @@ EOT
         $output->writeln(sprintf('Command completed successfully'));
         //-----we close the logger-----
         $this->_logger->setInfo(date("Y-m-d H:i:s")." [END] End launch");
-        $this->_logger->save();        
+        $this->_logger->save();
     }
-    
+
     /**
      * @return array
      */
-    private function getAllRoutes()
+    protected function getAllRoutes()
     {
         $routeCollection = $this->getContainer()->get('router')->getRouteCollection();
         $routes = array();
-    
+
         foreach ($routeCollection->all() as $name => $route) {
             $routes[$name] = $route->compile();
         }
-    
+
         return $routes;
-    }      
+    }
 }

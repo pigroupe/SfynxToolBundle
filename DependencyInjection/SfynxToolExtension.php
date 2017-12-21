@@ -46,7 +46,7 @@ class SfynxToolExtension extends Extension{
         $loaderYaml->load('services_twig_extension.yml');
         // we load config
         $configuration = new Configuration();
-        $config  = $this->processConfiguration($configuration, $config);        
+        $config  = $this->processConfiguration($configuration, $config);
 
         /**
          * Mail config parameter
@@ -58,23 +58,23 @@ class SfynxToolExtension extends Extension{
                 $container->setParameter('sfynx.tool.mail.overloading_mail', '');
             }
         }
-        
+
         /**
          * Date config parameter
-         */        
+         */
         if (isset($config['date']['cache_file'])) {
             $container->setParameter('sfynx.tool.date.cache_file', $config['date']['cache_file']);
-        }         
-        
+        }
+
         /**
          * LayoutHead config parameter
          */
         $container->setParameter('js_files', array());
-        $container->setParameter('css_files', array());        
+        $container->setParameter('css_files', array());
     }
-    
+
     public function getAlias()
     {
     	return 'sfynx_tool';
-    }   
+    }
 }

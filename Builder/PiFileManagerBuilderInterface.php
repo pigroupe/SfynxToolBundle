@@ -43,7 +43,7 @@ interface PiFileManagerBuilderInterface
     public function getContentCodeFile($file_code);
     public static function mkdirr($pathname, $mode = null);
     public static function rmdirr($dir);
-    public static function save($path, $content = '',  $mode = 0777, $flags = LOCK_EX);
+    public static function save($path, $content = '',  $mode = null, $flags = LOCK_EX);
     public static function rename($source, $newName);
     public static function copy( $source, $target);
     public static function move($source, $target);
