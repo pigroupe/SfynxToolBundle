@@ -33,14 +33,14 @@ class PiLayoutHeadExtension extends \Twig_Extension
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
-    
+
     /**
      *  absolute path to YUI jar file.
-     */    
+     */
     private $JAR_PATH;
-    
+
     private $TEMP_FILES_DIR;
-    
+
     private $options = array(
         'type' => 'js',
         'linebreak' => false,
@@ -49,11 +49,11 @@ class PiLayoutHeadExtension extends \Twig_Extension
         'semi' => false,
         'nooptimize' => false
     );
-    
-    private $files = array();
-    
+
+    private $files = [];
+
     private $string;
-     
+
     /**
      * Constructor.
      *
@@ -64,8 +64,8 @@ class PiLayoutHeadExtension extends \Twig_Extension
         $this->container      = $container;
         $this->JAR_PATH       = $container->getParameter('assetic.filter.yui_js.jar');
         $this->TEMP_FILES_DIR = $container->getParameter("kernel.root_dir") . "/../web/yui";
-    }    
-    
+    }
+
     /**
      * Returns the name of the extension.
      *
@@ -73,12 +73,12 @@ class PiLayoutHeadExtension extends \Twig_Extension
      * @access public
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     public function getName()
     {
         return 'sfynx_tool_layout_extension';
-    }    
-    
+    }
+
     /**
      * Returns the token parsers
      *
@@ -93,17 +93,17 @@ class PiLayoutHeadExtension extends \Twig_Extension
      * @access public
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     public function getTokenParsers()
     {
-        return array(
-            new StyleSheetTokenParser($this->getName()),
-            new StyleSheetsTokenParser($this->getName()),
-            new JavascriptTokenParser($this->getName()),
-            new JavascriptsTokenParser($this->getName()),             
-        );
+        return [
+            new StyleSheetTokenParser(PiLayoutHeadExtension::class),
+            new StyleSheetsTokenParser(PiLayoutHeadExtension::class),
+            new JavascriptTokenParser(PiLayoutHeadExtension::class),
+            new JavascriptsTokenParser(PiLayoutHeadExtension::class),
+        ];
     }
-    
+
     /**
      * Returns a list of functions to add to the existing list.
      *
@@ -113,16 +113,16 @@ class PiLayoutHeadExtension extends \Twig_Extension
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
     public function getFunctions() {
-        return array(
-                'CMFstylesheetsFunc' => new \Twig_Function_Method($this, 'renderLink'),
-                'CMFjavascriptsFunc' => new \Twig_Function_Method($this, 'renderScript'),
-        );
-    }    
-    
+        return [
+            new \Twig_SimpleFunction('CMFstylesheetsFunc', [$this, 'renderLink']),
+            new \Twig_SimpleFunction('CMFjavascriptsFunc', [$this, 'renderScript']),
+        ];
+    }
+
     /**
      * Callbacks
      */
-        
+
     /**
      * Add CSS file in the contener.
      *
@@ -133,29 +133,29 @@ class PiLayoutHeadExtension extends \Twig_Extension
      * @access public
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     public function addCssFile($file, $order = "append")
     {
         $css_files = ($this->container->has('css_files')) ? $this->container->get('css_files') : array();
-        $is_order  = explode(':', $file);        
+        $is_order  = explode(':', $file);
         if (isset($is_order[1]) && !empty($is_order[1])){
             if (in_array($is_order[1], array('append', 'prepend'))){
                 $file  = $is_order[0];
                 $order = $is_order[1];
             }
-        }        
+        }
         // Append to the beginning of an array
         if ($order == "append") {
             array_push($css_files, $file);
         } elseif ($order == "prepend"){
             // Prepend to the beginning of an array
             array_unshift($css_files, $file);
-        }            
+        }
         // Removes duplicate values from an array
-        $css_files = array_unique($css_files);        
+        $css_files = array_unique($css_files);
         $this->container->set('css_files', $css_files);
     }
-    
+
     /**
      * Add JS file in the contener.
      *
@@ -170,25 +170,25 @@ class PiLayoutHeadExtension extends \Twig_Extension
     public function addJsFile($file, $order = "append")
     {
         $js_files = ($this->container->has('js_files')) ? $this->container->get('js_files') : array();
-        $is_order  = explode(':', $file);        
+        $is_order  = explode(':', $file);
         if (isset($is_order[1]) && !empty($is_order[1])){
             if (in_array($is_order[1], array('append', 'prepend'))){
                 $file  = $is_order[0];
                 $order = $is_order[1];
             }
-        }            
+        }
         // Append to the beginning of an array
         if ($order == "append") {
             array_push($js_files, $file);
         } elseif ($order == "prepend"){
             // Prepend to the beginning of an array
             array_unshift($js_files, $file);
-        }                
+        }
         // Removes duplicate values from an array
-        $js_files = array_unique($js_files);    
+        $js_files = array_unique($js_files);
         $this->container->set('js_files', $js_files);
-    }    
-    
+    }
+
     /**
      * Return all CSS files in the container in links.
      *
@@ -204,19 +204,19 @@ class PiLayoutHeadExtension extends \Twig_Extension
         if (!$this->container->has('css_files')) {
             return ;
         } elseif ($compressor == "empty") {
-            $this->container->set('css_files', array());
+            $this->container->set('css_files', []);
             return '';
         }
-        $links       = array();
-        $linksPath   = array();
-        $this->files = array();
-        //
+        $links       = [];
+        $linksPath   = [];
+        $this->files = [];
+
         $all_stylesheets = $this->container->get('css_files');
         foreach($all_stylesheets as $stylesheet)
         {
-            $stylesheet = trim($stylesheet);            
-            if (empty($stylesheet)) { 
-                continue;            
+            $stylesheet = trim($stylesheet);
+            if (empty($stylesheet)) {
+                continue;
             }
             //
             str_replace('http://', 'http', $stylesheet, $nb_http);
@@ -244,7 +244,7 @@ class PiLayoutHeadExtension extends \Twig_Extension
             return $linksPath;
         }
     }
-    
+
     /**
      * Return all JS files in the container in links.
      *
@@ -254,7 +254,7 @@ class PiLayoutHeadExtension extends \Twig_Extension
      * @access public
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     public function renderScript($compressor = 'yui')
     {
         if (!$this->container->has('js_files')) {
@@ -262,12 +262,12 @@ class PiLayoutHeadExtension extends \Twig_Extension
         } elseif ($compressor == "empty") {
             $this->container->set('js_files', array());
             return '';
-        }            
-        //
-        $scripts     = array();
-        $linksPath   = array();
-        $this->files = array();
-        //
+        }
+
+        $scripts     = [];
+        $linksPath   = [];
+        $this->files = [];
+
         $all_javascripts = $this->container->get('js_files');
         foreach ($all_javascripts as $javascript) {
                $javascript = trim($javascript);
@@ -275,18 +275,18 @@ class PiLayoutHeadExtension extends \Twig_Extension
                    continue;
                }
                str_replace('http://', 'http', $javascript, $nb_http);
-               str_replace('https://', 'https', $javascript, $nb_https);               
+               str_replace('https://', 'https', $javascript, $nb_https);
                //$scripts[] = '<script type="text/javascript" src="' . $this->container->get('router')->generate('public_head_file', array('file' => $javascript)) . '" ></script>';
                if ($nb_http == 0) {
                    $scripts[]  = '    <script type="text/javascript" src="' . $this->container->get('Request')->getBasePath() . '/' . $javascript.'" ></script>';
-                   $this->files[]    = $this->container->getParameter("kernel.root_dir") . '/../web/' . $javascript;
-                   $linksPath[]    = $this->container->get('Request')->getBasePath() . '/' . $javascript;
+                   $this->files[] = $this->container->getParameter("kernel.root_dir") . '/../web/' . $javascript;
+                   $linksPath[]   = $this->container->get('Request')->getBasePath() . '/' . $javascript;
                } else {
                    $scripts[]  = '    <script type="text/javascript" src="' . $javascript.'" ></script>';
-                   $this->files[]    = $javascript;
-                   $linksPath[]    = $javascript;
+                   $this->files[] = $javascript;
+                   $linksPath[]   = $javascript;
                }
-        }     
+        }
         if ($compressor == 'file') {
             return implode("\n", $scripts);
         } elseif ($compressor == 'php') {
@@ -297,8 +297,8 @@ class PiLayoutHeadExtension extends \Twig_Extension
             return '<script type="text/javascript" src="/yui/js/' . $this->compress("path", "yui").'.js'.'" ></script>';
         } elseif ($compressor == 'array') {
             return $linksPath;
-        }    
-    }  
+        }
+    }
 
     /**
      * Executes the compression command in shell
@@ -310,27 +310,27 @@ class PiLayoutHeadExtension extends \Twig_Extension
      * @access public
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
-    private function compress($result = "path", $compressor = "yui")
-    {    
+     */
+    protected function compress($result = "path", $compressor = "yui")
+    {
         // we get the value of css_js_cache_file param
         $is_refresh_css_js_cache_file = $this->container->getParameter("pi_app_admin.page.refresh.css_js_cache_file");
         // we create csss and js repository if does not exist
-        \Sfynx\ToolBundle\Util\PiFileManager::mkdirr($this->container->getParameter("kernel.root_dir"). '/../web/yui/css', 0777);
-        \Sfynx\ToolBundle\Util\PiFileManager::mkdirr($this->container->getParameter("kernel.root_dir"). '/../web/yui/js', 0777);        
+        \Sfynx\ToolBundle\Util\PiFileManager::mkdirr($this->container->getParameter("kernel.root_dir"). '/../web/yui/css');
+        \Sfynx\ToolBundle\Util\PiFileManager::mkdirr($this->container->getParameter("kernel.root_dir"). '/../web/yui/js');
         // create the input
-        foreach ($this->files as $file) {            
-            $basePath = str_replace($this->container->getParameter("kernel.root_dir"). '/../web/', '', dirname($file));            
+        foreach ($this->files as $file) {
+            $basePath = str_replace($this->container->getParameter("kernel.root_dir"). '/../web/', '', dirname($file));
             if (strtolower($this->options['type']) == "css") {
                 $content_file   = str_replace(array('url("', "url('", "')", '")'), array('url(', 'url(', ')', ')'), file_get_contents($file));
-                $content_file   = str_replace(array('url('), array('url(../../'.$basePath.'/'), $content_file);                
+                $content_file   = str_replace(array('url('), array('url(../../'.$basePath.'/'), $content_file);
                 $content_file   = str_replace('@import "', "   @import \"../../".$basePath."/", $content_file);
-                $content_file   = str_replace('";', '";   ', $content_file);                
+                $content_file   = str_replace('";', '";   ', $content_file);
                 $this->string  .= $content_file;
             } else {
                 $this->string  .=  file_get_contents($file);
             }
-        }       
+        }
         if (preg_match_all('/@import "([^`]*?)";/i', $this->string, $allImports, PREG_SET_ORDER)) {
             $this->string = preg_replace_callback(
                 '/@import "([^`]*?)";/i',
@@ -342,40 +342,40 @@ class PiLayoutHeadExtension extends \Twig_Extension
             foreach ($allImports as $k => $import) {
                 $this->string = $import[0] . "  " . $this->string;
             }
-        }        
+        }
         // create single file from all input
         $input_hash = sha1($this->string);
         // create path file
         $nameFile   = strtolower($this->options['type']) . '/' . $input_hash . '.' . strtolower($this->options['type']);
         $file       = $this->TEMP_FILES_DIR . '/' . $nameFile;
         // we compress the content
-        if ( $is_refresh_css_js_cache_file && !file_exists($file) && $this->container->get('sfynx.tool.file_manager')->save($file, $this->string, 0777)){
+        if ( $is_refresh_css_js_cache_file && !file_exists($file) && $this->container->get('sfynx.tool.file_manager')->save($file, $this->string)){
             switch (true) {
                 case ($compressor == "yui"):
                     // start with basic command
-                    $cmd = "java -Xmx32m -jar " . escapeshellarg($this->JAR_PATH) . ' ' . escapeshellarg($file) . " --charset UTF-8";                    
+                    $cmd = "java -Xmx32m -jar " . escapeshellarg($this->JAR_PATH) . ' ' . escapeshellarg($file) . " --charset UTF-8";
                     // set the file type
-                    $cmd .= " --type " . (strtolower($this->options['type']) == "css" ? "css" : "js");                    
+                    $cmd .= " --type " . (strtolower($this->options['type']) == "css" ? "css" : "js");
                     // and add options as needed
                     if ($this->options['linebreak'] && intval($this->options['linebreak']) > 0) {
                         $cmd .= ' --line-break ' . intval($this->options['linebreak']);
-                    }                    
+                    }
                     if ($this->options['verbose']) {
                         $cmd .= " -v";
-                    }                    
+                    }
                     if ($this->options['nomunge']) {
                         $cmd .= ' --nomunge';
-                    }                    
+                    }
                     if ($this->options['semi']) {
                         $cmd .= ' --preserve-semi';
-                    }                    
+                    }
                     if ($this->options['nooptimize']) {
                         $cmd .= ' --disable-optimizations';
-                    }                    
+                    }
                     // execute the command
-                    exec($cmd . ' 2>&1', $raw_output);                    
+                    exec($cmd . ' 2>&1', $raw_output);
                     // add line breaks to show errors in an intelligible manner
-                    $flattened_output = implode("\n", $raw_output);            
+                    $flattened_output = implode("\n", $raw_output);
                     // we put the compressor content in the file.
                     file_put_contents($file, $flattened_output);
                     break;
@@ -399,7 +399,7 @@ class PiLayoutHeadExtension extends \Twig_Extension
                     // use default
                     break;
             }
-        }        
+        }
         // we initialize the content.
         $this->string = "";
         // we return result
@@ -407,14 +407,13 @@ class PiLayoutHeadExtension extends \Twig_Extension
             case ($result == "content"):
                 if (file_exists($file)) {
                     return file_get_contents($file);
-                } else {
-                    return '';
                 }
+                return '';
             case ($result == "path"):
                 return $input_hash;
             default:
                 return "";
-        }        
-    }    
+        }
+    }
 
 }

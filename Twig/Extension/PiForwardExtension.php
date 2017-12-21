@@ -26,7 +26,7 @@ class PiForwardExtension extends \Twig_Extension
 {
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */    
+     */
     private $container;
 
     /**
@@ -38,7 +38,7 @@ class PiForwardExtension extends \Twig_Extension
     {
         $this->container = $container;
     }
-    
+
     /**
      * Returns the name of the extension.
      *
@@ -50,8 +50,8 @@ class PiForwardExtension extends \Twig_Extension
     public function getName()
     {
         return 'sfynx_tool_forward_extension';
-    }    
-    
+    }
+
     /**
      * Returns a list of functions to add to the existing list.
      *
@@ -66,17 +66,17 @@ class PiForwardExtension extends \Twig_Extension
      */
     public function getFunctions()
     {
-        return array(
-                'renderForward'  => new \Twig_Function_Method($this, 'renderForwardFunction'),
-        );
-    }    
+        return [
+            new \Twig_SimpleFunction('renderForward', [$this, 'renderForwardFunction']),
+        ];
+    }
 
     /**
      * Returns the Response content for a given controller or URI.
      *
      * @param string $controller The controller name
      * @param array  $params    An array of params
-     * 
+     *
      * @return string
      * @access public
      *
@@ -84,13 +84,13 @@ class PiForwardExtension extends \Twig_Extension
      */
     public function renderForwardFunction($controller, $params = array())
     {
-        $params['lang']   = $this->container->get('request')->getLocale();
-        $params['_route'] = $this->container->get('request')->get('_route');
+        $params['lang']   = $this->container->get('request_stack')->getCurrentRequest()->getLocale();
+        $params['_route'] = $this->container->get('request_stack')->getCurrentRequest()->get('_route');
         // this allow Redirect Response in controller action
         $params['_controller'] = $controller;
-        $subRequest = $this->container->get('request')->duplicate($_GET, $_POST, $params);
+        $subRequest = $this->container->get('request_stack')->getCurrentRequest()->duplicate($_GET, $_POST, $params);
         $response   =  $this->container->get('http_kernel')->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
-        
+
         return $response->getContent();
     }
 }

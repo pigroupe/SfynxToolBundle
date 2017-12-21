@@ -43,9 +43,5 @@ interface PiArrayManagerBuilderInterface
     public static function writeArray($aInput, $jsVarName, $eol=PHP_EOL);
     public static function InnerHTML($HTML,$Balise,$Prem_val='',$Affiche_prems=true,$Nbre_bal=0);
     public static function findIndice($Tableau,$Val);
-    public static function Xmlobject2json($object);
-    public static function Xmlobject2array($object);
     public static function array_to_object($array);
-    public static function init($version = '1.0', $encoding = 'UTF-8', $format_output = true);
-    public static function &createXML($node_name, $arr=array());
 }

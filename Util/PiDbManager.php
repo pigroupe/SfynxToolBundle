@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of the <Tool> project.
- * 
+ *
  * @category   Tool
  * @package    Util
  * @subpackage Service
@@ -18,12 +18,12 @@
 namespace Sfynx\ToolBundle\Util;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Sfynx\ToolBundle\Exception\ServiceException;
+use Sfynx\CoreBundle\Layers\Infrastructure\Exception\ServiceException;
 use Sfynx\ToolBundle\Route\AbstractFactory;
 
 /**
  * Instance Db
- * 
+ *
  * @category   Tool
  * @package    Util
  * @subpackage Service
@@ -39,12 +39,12 @@ class PiDbManager extends AbstractFactory
 	const BIND_TYPE_NUM = 'NUM';
 	const BIND_TYPE_INT = 'INT';
 	const BIND_TYPE_STR = 'CHAR';
-	
+
 	/**
 	 * @var integer
-	 */	
+	 */
 	private $InsertId;
-		
+
     /**
      * Constructor.
      *
@@ -76,7 +76,7 @@ class PiDbManager extends AbstractFactory
                 "VALUE" 	=> $varValue,
 				"TYPE" 		=> $dataType
     	);
-    }   
+    }
 
     /**
      * Execute the request qwith params
@@ -134,32 +134,32 @@ class PiDbManager extends AbstractFactory
                 }
             }
     	}
-    	
+
     	str_replace('select', 'select', strtolower($query), $cont_select);
     	str_replace('insert', 'insert', strtolower($query), $cont_insert);
-    	
+
     	if ($log) {
     		print_r($query);
     		return true;
     	}
-    	
+
     	if ($cont_select >= 1) {
     		return $this->getConnection()->executeQuery($query)->fetchAll();
     	} elseif ($cont_insert >= 1) {
     		$this->getConnection()->executeQuery($query);
     		$this->InsertId = $this->getConnection()->lastInsertId();
-    		
+
     		return true;
     	} else {
     		return $this->getConnection()->executeQuery($query)->execute();
     	}
-    }    
-    
-    public function getInsertedId() 
-    {
-    	return $this->InsertId;	
     }
-    
+
+    public function getInsertedId()
+    {
+    	return $this->InsertId;
+    }
+
     /**
      * Quote SQL
      *
@@ -169,10 +169,10 @@ class PiDbManager extends AbstractFactory
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      * @since 2013-11-14
-     */    
-    private function quoteSql($str) {
+     */
+    protected function quoteSql($str) {
     	return "'".addslashes($str)."'";
-    } 
+    }
 
     /**
      * Gets the list of all tables.
@@ -200,12 +200,12 @@ class PiDbManager extends AbstractFactory
                     list($domaine, $bundle, $entity) = split("\\\\", $m->getName(), 3);
                 	$tables[$m->getName()] = $domaine.$bundle.':'.str_replace('Entity\\', '', $entity);
                 }
-            	break;                
+            	break;
             default :
             	throw ServiceException::optionValueNotSpecified($type);
             	break;
-        }                    
+        }
 
         return $tables;
-    }    
+    }
 }

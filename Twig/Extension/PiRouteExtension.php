@@ -61,12 +61,12 @@ class PiRouteExtension extends \Twig_Extension
      */
     public function getFunctions()
     {
-        return array(
-            'path_url'    => new \Twig_Function_Method($this, 'getUrlByRouteFunction'),
-            'match_url'   => new \Twig_Function_Method($this, 'getMatchUrlFunction'),
-            'in_paths'    => new \Twig_Function_Method($this, 'inPathsFunction'),
-            'route_match' => new \Twig_Function_Method($this, 'isRouteMatchingFunction'), 
-        );
+        return [
+            new \Twig_SimpleFunction('path_url', [$this, 'getUrlByRouteFunction']),
+            new \Twig_SimpleFunction('match_url', [$this, 'getMatchUrlFunction']),
+            new \Twig_SimpleFunction('in_paths', [$this, 'inPathsFunction']),
+            new \Twig_SimpleFunction('route_match', [$this, 'isRouteMatchingFunction']),
+        ];
     }
     
     /**
@@ -86,12 +86,10 @@ class PiRouteExtension extends \Twig_Extension
     public function getUrlByRouteFunction($routeName, $params = null)
     {
         try {
-            $url_route = $this->container->get('sfynx.tool.route.factory')->getRoute($routeName, $params);
+            return $this->container->get('sfynx.tool.route.factory')->generate($routeName, $params);
         } catch (\Exception $e) {
-            $url_route = "";
+            return "";
         }
-        
-        return $url_route;
     }
     
     /**
@@ -108,13 +106,11 @@ class PiRouteExtension extends \Twig_Extension
     public function getMatchUrlFunction($pathInfo)
     {
         try {
-            $match    = $this->container->get('be_simple_i18n_routing.router')->match($pathInfo);
+            return $this->container->get('be_simple_i18n_routing.router')->match($pathInfo);
         } catch (\Exception $e) {
-            $match    = array();
+            return [];
         }
-        
-        return $match;
-    }    
+    }
     
     /**
      * Return the $returnTrue value if the route of the page is include in $paths value, else return the $returnFalse value.
@@ -123,26 +119,24 @@ class PiRouteExtension extends \Twig_Extension
      */    
     public function inPathsFunction($matches, $returnTrue = '', $returnFalse = '')
     {
-        $route = (string) $this->container->get('request')->get('_route');
+        $route = (string) $this->container->get('request_stack')->getCurrentRequest()->get('_route');
         $names = explode(':', $matches);
         $is_true = false;        
         if (is_array($names)) {
             foreach ($names as $k => $path) {
-                if ($route == $path)
+                if ($route == $path) {
                     $is_true = true;
+                }
             }
             if ($is_true) {
                 return $returnTrue;
-            } else {
-                return $returnFalse;
-            }            
-        } else {
-            if ($route == $matches) {
-                return $returnTrue;
-            } else {
-                return $returnFalse;
-            }            
+            }
+            return $returnFalse;
         }
+        if ($route == $matches) {
+            return $returnTrue;
+        }
+        return $returnFalse;
     }   
     
     public function isRouteMatchingFunction($matches)

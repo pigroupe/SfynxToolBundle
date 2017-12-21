@@ -32,11 +32,11 @@ class JavascriptNode extends \Twig_Node
      * @param     string                                 $tag (optional)
      * @return     void
      */
-    public function __construct($extensionName, \Twig_NodeInterface $value, $lineno, $tag = null)
+    public function __construct($extensionName, \Twig_Node $value, $lineno, $tag = null)
     {
         $this->extensionName = $extensionName;
         
-        parent::__construct(array('value' => $value), array(), $lineno, $tag);
+        parent::__construct(['value' => $value], [], $lineno, $tag);
     }
 
     /**
@@ -48,7 +48,7 @@ class JavascriptNode extends \Twig_Node
         $compiler->addDebugInfo($this);
 
         $compiler
-            ->write("echo \$this->env->getExtension('".$this->extensionName."')->addJsFile(")
+            ->write(sprintf("echo \$this->env->getExtension('%s')->addJsFile(", $this->extensionName))
             ->subcompile($this->getNode('value'))
             ->raw(");\n");
     }

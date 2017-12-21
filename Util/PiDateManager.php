@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of the <Tool> project.
- * 
+ *
  * @category   Tool
  * @package    Util
  * @subpackage Service
@@ -26,26 +26,26 @@ use Sfynx\ToolBundle\Builder\PiDateManagerBuilderInterface;
  *  $dateFormatter    = $this->container->get('sfynx.tool.date_manager');
  *  $result            = $dateFormatter->parse('December 20, 2011', 'en_GB'); // obtains a datetime instance
  *  echo $dateFormatter->format($result, 'long', 'none', 'fr'); // echoes : "20 décembre 2011"
- *  
+ *
  *  $all_days 		= $this->container->get('sfynx.tool.date_manager')->allDays($lang);
  *  $all_months_last= $this->container->get('sfynx.tool.date_manager')->nextOrLastList($year-1, intVal(date('n')), '1', 'next', 12, 'month', 'Y-m');
  *  $letter_month_current = $this->container->get('sfynx.tool.date_manager')->format(new \DateTime("$year-$month-01"), 'long','medium', $lang, 'MMMM');
- *  
+ *
  *  // To get a jump of months.
  *  $last = date("Y-m", strtotime("-1 month", strtotime($year."-".$month."-1")));
  * 	$next = date("Y-m", strtotime("+1 month", strtotime($year."-".$month."-1")));
- * 
+ *
  *  // Days in current month
  *  $days 		= cal_days_in_month(CAL_GREGORIAN,$date_month,$date_year);
- *  
+ *
  *  // the last year
  *  $last_year = date("Y", strtotime("-1 year", strtotime(date('y')."-".date('n')."-1")));
- *  
+ *
  *  $lastmonth 	= date("t", mktime(0,0,0,$date_month-1,1,$date_year)); // Days in previous month
  *  $start 		= date("N", mktime(0,0,0,$date_month,1,$date_year)); // Starting day of current month
  * 	$finish 	= date("N", mktime(0,0,0,$date_month,$days,$date_year)); // Finishing day of  current month
  * </code>
- * 
+ *
  * @category   Tool
  * @package    Util
  * @subpackage Service
@@ -56,8 +56,8 @@ use Sfynx\ToolBundle\Builder\PiDateManagerBuilderInterface;
  * @link       http://opensource.org/licenses/gpl-license.php
  * @since      2015-02-16
  */
-class PiDateManager implements PiDateManagerBuilderInterface 
-{    
+class PiDateManager implements PiDateManagerBuilderInterface
+{
     protected $formats = array(
         'full'   => \IntlDateFormatter::FULL,
         'long'   => \IntlDateFormatter::LONG,
@@ -65,7 +65,7 @@ class PiDateManager implements PiDateManagerBuilderInterface
         'short'  => \IntlDateFormatter::SHORT,
         'none'   => \IntlDateFormatter::NONE,
     );
-    
+
     /**
      * Factory method to get a DateTime object from a temporal input
      *
@@ -121,28 +121,28 @@ class PiDateManager implements PiDateManagerBuilderInterface
         $year  = date('Y', $value);
 
         return checkdate($month, $day, $year);
-    }    
-    
+    }
+
     /**
      * Parse a string representation of a date to a \DateTime
-     * 
+     *
      * @param string $date
      * @param string $locale
-     * 
+     *
      * @return \DateTime datetime
-     * @access public 
+     * @access public
      * @throws \Exception If fails parsing the string
-     * 
+     *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
     public function parse($date, $locale = null)
     {
         $result = new \DateTime();
         $result->setTimestamp($this->parseTimestamp($date, $locale));
-        
+
         return $result;
     }
-    
+
     /**
      * Translate a timestamp to a localized string representation.
      * Parameters dateType and timeType defines a kind of format. Allowed values are (none|short|medium|long|full).
@@ -158,11 +158,11 @@ class PiDateManager implements PiDateManagerBuilderInterface
      *
      * @return string The string representation
      * @access public
-     * 
+     *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
     public function format($date, $dateType = 'medium', $timeType = 'none', $locale = null, $pattern = null)
-    {    
+    {
         if (is_string($date)) {
             $date = intval($date);
         }
@@ -172,17 +172,17 @@ class PiDateManager implements PiDateManagerBuilderInterface
         $dateFormater = \IntlDateFormatter::create($locale ?: \Locale::getDefault(), $this->formats[$dateType], $this->formats[$timeType], date_default_timezone_get(), null, $pattern);
         return $dateFormater->format($date);
     }
-    
+
     /**
      * Parse a string representation of a date to a timestamp.
-     * 
+     *
      * @param string $date
      * @param string $locale
-     * 
+     *
      * @return int Timestamp
      * @access public
      * @throws \Exception If fails parsing the string
-     * 
+     *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
     public function parseTimestamp($date, $locale = null) {
@@ -196,13 +196,13 @@ class PiDateManager implements PiDateManagerBuilderInterface
                 foreach($this->formats as $dateFormat) {
                     $dateFormater = \IntlDateFormatter::create($locale ?: \Locale::getDefault(), $dateFormat, $timeFormat, date_default_timezone_get());
                     $timestamp = $dateFormater->parse($date);
-                    
+
                     if ($dateFormater->getErrorCode() == 0) {
                         return $timestamp;
                     }
                 }
             }
-            
+
             // try other custom formats
             $formats = array(
                 'MMMM yyyy', // november 2011 - nov. 2011
@@ -210,16 +210,16 @@ class PiDateManager implements PiDateManagerBuilderInterface
             foreach($formats as $format) {
                 $dateFormater = \IntlDateFormatter::create($locale ?: \Locale::getDefault(), $this->formats['none'], $this->formats['none'],  date_default_timezone_get(), \IntlDateFormatter::GREGORIAN, $format);
                 $timestamp = $dateFormater->parse($date);
-                
+
                 if ($dateFormater->getErrorCode() == 0) {
                     return $timestamp;
                 }
             }
-            
+
             throw new \Exception('"'.$date.'" could not be converted to \DateTime');
         }
     }
-    
+
     /**
      * Retourne litteralement une date.
      *
@@ -254,10 +254,10 @@ class PiDateManager implements PiDateManagerBuilderInterface
     		$time = floor($delta / 86400);
     		$duration = $time . " day" . (($time > 1) ? "s" : "") . " ago";
     	}
-    
+
     	return $duration;
-    }    
-    
+    }
+
     /**
      * Returns the difference between the given timestamps and now or from.
      *
@@ -267,10 +267,10 @@ class PiDateManager implements PiDateManagerBuilderInterface
      * @access public
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */     
+     */
     public function RelativeTime(\DateTime $dateTime, $from = null)
     {
-        if (is_null($from)) {
+        if ((null === $from)) {
             $from = time();
         }
     	$delta = $dateTime->getTimestamp() - $from ;
@@ -278,7 +278,7 @@ class PiDateManager implements PiDateManagerBuilderInterface
     		return '';
     	}
     	$duration = "";
-    
+
     	$units = array("second"     => 1,
     			"minute"     => 60,
     			"hour"       => 60 * 60,
@@ -289,9 +289,9 @@ class PiDateManager implements PiDateManagerBuilderInterface
     			"decade"     => 60 * 60 * 24 * 365 * 10,
     			"century"    => 60 * 60 * 24 * 365 * 100,
     			"millennium" => 60 * 60 * 24 * 365 * 1000);
-    
+
     	$year = false; $month = false;
-    
+
     	if ($delta > $units["year"]) {
     		// Années
     		$time = floor($delta /  $units["year"]);
@@ -319,10 +319,10 @@ class PiDateManager implements PiDateManagerBuilderInterface
     			$duration .= " <span>".$time . "</span> jour" . (($time > 1) ? "s" : "");
     		}
     	}
-    	    
+
     	return $duration;
     }
-    
+
     /**
      * Returns the difference between the given date and now or from.
      *
@@ -335,20 +335,20 @@ class PiDateManager implements PiDateManagerBuilderInterface
      */
     public function NextDate(\DateTime $dateTime, $from = null)
     {
-    	if (is_null($from)) {
+    	if ((null === $from)) {
     		$from = new \Datetime();
     	}
-    
+
     	if(is_object($dateTime)){
-    
+
     		$d1 = date_create($dateTime->format('Ymd'));
     		$d2 = date_create($from->format('Ymd'));
-    
+
     		$interval2 = $d2->diff($d1);
     		$dy = $interval2->format('%r%y');
     		$dm = $interval2->format('%r%m');
     		$dd = $interval2->format('%r%d');
-    		 
+
     		$year = $month = false;
     		$duration = '';
     		if ($dy > 0) {
@@ -362,7 +362,7 @@ class PiDateManager implements PiDateManagerBuilderInterface
     				$duration .= ",";
     			}
     			$duration .= " <span>".$dm . "</span> mois";
-    
+
     			$month = true;
     		}
     		if ($dd > 0) {
@@ -371,13 +371,13 @@ class PiDateManager implements PiDateManagerBuilderInterface
     				$duration .= " et";
     			}
     			$duration .= " <span>".$dd . "</span> jour" . (($dd > 1) ? "s" : "");
-    
+
     		}
     		return $duration;
     	}
     	return '';
-    }    
-    
+    }
+
     /**
      * List of all months.
      *
@@ -396,8 +396,8 @@ class PiDateManager implements PiDateManagerBuilderInterface
             $month_name[$key] = $this->format(new \DateTime(date( 'Y-m-d', mktime(0, 0, 0, $i))), 'long','medium', $locale, 'MMMM');
         }
         return    $month_name;
-    } 
-    
+    }
+
     /**
      * List of all days.
      *
@@ -416,8 +416,8 @@ class PiDateManager implements PiDateManagerBuilderInterface
             $day_name[$key] = $this->format(new \DateTime( date('Y-m-d', strtotime("+$i day", strtotime("2013-02-17")))), 'long','medium', $locale, 'EEEE');
         }
         return    $day_name;
-    }    
-    
+    }
+
     /**
      * List of the x next/last year/months/day of a date.
      *
@@ -425,7 +425,7 @@ class PiDateManager implements PiDateManagerBuilderInterface
      * @param string $month
      * @param string $day
      * @param string $order        ['last','next']
-     * @param string $number    
+     * @param string $number
      * @param string $type        ['year','month','day']
      * @param string $format
      * @access public
@@ -439,10 +439,10 @@ class PiDateManager implements PiDateManagerBuilderInterface
         $month         = str_replace(array('00','01','02','03','04','05','06','07','08','09'),array('0','1','2','3','4','5','6','7','8','9'),$month);
         $day         = str_replace(array('00','01','02','03','04','05','06','07','08','09'),array('0','1','2','3','4','5','6','7','8','9'),$day);
         $date         = "{$year}-{$month}-{$day}";
-        
+
         $first      = strtotime($date);
         $results     = array();
-        
+
         if ($order == 'next') {
             for ($i = 0; $i < $number; $i++) {
                 array_push($results, date($format, strtotime("+$i $type", $first)));
@@ -453,5 +453,5 @@ class PiDateManager implements PiDateManagerBuilderInterface
             }
         }
         return $results;
-    }   
+    }
 }

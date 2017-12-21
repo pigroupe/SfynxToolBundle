@@ -14,11 +14,6 @@ namespace Sfynx\ToolBundle\Route;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\Config\Loader\LoaderResolver;
-use Symfony\Component\Routing\Matcher\Dumper\ApacheMatcherDumper;
 use Symfony\Component\Config\ConfigCache;
 
 /**
@@ -31,48 +26,48 @@ use Symfony\Component\Config\ConfigCache;
 class CacheRoute
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     * @var ContainerInterface
      */
     private $container;
-    
+
     /**
      * @var \Symfony\Component\Routing\RouteCollection
      */
     private $collection;
-    
+
     /**
      * @var string
-     */    
+     */
     private $environment;
-            
+
     /**
      * @var array
-     */    
-    private $options = array(
+     */
+    private $options = [
             'cache_dir'              => null,
-            'generator_class'        => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator', // 'Symfony\\Component\\Routing\\Generator\\UrlGenerator',
-            'generator_base_class'   => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator', // 'Symfony\\Component\\Routing\\Generator\\UrlGenerator',
+            'generator_class'        => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator',
+            'generator_base_class'   => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator',
             'generator_dumper_class' => 'Symfony\\Component\\Routing\\Generator\\Dumper\\PhpGeneratorDumper',
-            'generator_cache_class'  => 'UrlGenerator',
-            'matcher_class'          => 'Symfony\Bundle\FrameworkBundle\Routing\RedirectableUrlMatcher', // 'Symfony\\Component\\Routing\\Matcher\\UrlMatcher',
-            'matcher_base_class'     => 'Symfony\Bundle\FrameworkBundle\Routing\RedirectableUrlMatcher', // 'Symfony\\Component\\Routing\\Matcher\\UrlMatcher',
+            'generator_cache_class'  => 'ProjectContainerUrlGenerator',
+            'matcher_class'          => 'Symfony\\Component\\Routing\\Matcher\\UrlMatcher',
+            'matcher_base_class'     => 'Symfony\\Component\\Routing\\Matcher\\UrlMatcher',
             'matcher_dumper_class'   => 'Symfony\\Component\\Routing\\Matcher\\Dumper\\PhpMatcherDumper',
-            'matcher_cache_class'    => 'UrlMatcher',
+            'matcher_cache_class'    => 'ProjectContainerUrlMatcher',
             'resource_type'          => null,
-    );
+    ];
 
     /**
      * Constructor.
      *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+     * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {
         $this->container            = $container;
         $this->options['cache_dir'] = $container->get("kernel")->getCacheDir();
         $this->environment          = ucfirst($container->get("kernel")->getEnvironment());
-        // we get all routes existed
         $this->collection           = $container->get('router')->getRouteCollection();
+        $this->debug                = (bool) $container->get("kernel")->isDebug();
     }
 
     /**
@@ -82,23 +77,23 @@ class CacheRoute
      */
     public function setGenerator()
     {
-        $class                 = "app".$this->environment . $this->options['generator_cache_class'];
-        $this->file         = realpath($this->options['cache_dir'].'/'.$class.'.php');
-        $cache        = new ConfigCache($this->file, false);
+        $class      = "app" . $this->environment . ( $this->debug ? 'Debug' : '' ) . $this->options['generator_cache_class'];
+        $this->file = realpath($this->options['cache_dir'].'/'.$class.'.php');
+        $cache      = new ConfigCache($this->file, false);
         //if (!$cache->isFresh($class)) {
             $dumper     = new $this->options['generator_dumper_class']($this->collection);
-            $options     = array(
+            $options     = [
                     'class'      => $class,
                     'base_class' => $this->options['generator_base_class'],
-            );
-            
-            try {
+            ];
+
+//            try {
                 $cache->write($dumper->dump($options), $this->collection->getResources());
-            } catch (\Exception $e) {
-            }
+//            } catch (\Exception $e) {
+//            }
         //}
     }
-    
+
     /**
      * Gets the UrlMatcher instance associated with this Router.
      *
@@ -106,23 +101,22 @@ class CacheRoute
      */
     public function setMatcher()
     {
-        $class        = "app".$this->environment . $this->options['matcher_cache_class'];
-        $this->file = $this->options['cache_dir'].'/'.$class.'.php';
-    
-        $cache         = new ConfigCache($this->file, false);  // //if (!$cache->isFresh($class))
+        $class      = "app" . $this->environment . ( $this->debug ? 'Debug' : '' ) . $this->options['matcher_cache_class'];
+        $this->file = realpath($this->options['cache_dir'].'/'.$class.'.php');
+        $cache      = new ConfigCache($this->file, false);  // //if (!$cache->isFresh($class))
         //if (!$cache->isFresh($class)) {
             $dumper     = new $this->options['matcher_dumper_class']($this->collection);
-            $options     = array(
+            $options     = [
                 'class'      => $class,
                 'base_class' => $this->options['matcher_base_class'],
-            );
-            try {
+            ];
+//            try {
                 $cache->write($dumper->dump($options), $this->collection->getResources());
-            } catch (\Exception $e) {
-            }
+//            } catch (\Exception $e) {
+//            }
         //}
     }
-    
+
     /**
      * Checks if the cache is still fresh.
      *
@@ -131,7 +125,7 @@ class CacheRoute
      *
      * @return Boolean true if the cache is fresh, false otherwise
      */
-    private function isFresh()
+    protected function isFresh()
     {
         if (!file_exists($this->file)) {
             return false;
@@ -148,7 +142,7 @@ class CacheRoute
                 return false;
             }
         }
-        
+
         return true;
-    }    
+    }
 }

@@ -18,7 +18,7 @@
 namespace Sfynx\ToolBundle\Util;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Sfynx\ToolBundle\Exception\ServiceException;
+use Sfynx\CoreBundle\Layers\Infrastructure\Exception\ServiceException;
 use Sfynx\ToolBundle\Route\AbstractFactory;
 use Sfynx\ToolBundle\Util\PiFileManager;
 
@@ -59,11 +59,11 @@ class PiScriptManager extends AbstractFactory
      * @access public
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
-    public function renderScript($content_js, $content_html, $path_prefix = '/', $result = "both")
+    public function renderScript($content_js, $content_html, $path_prefix = '', $result = "both")
     {
     	$TEMP_FILES_DIR = $this->getContainer()->getParameter("kernel.root_dir") . "/../web/yui/js/" . $path_prefix;
     	// we create repository if does not exit
-    	PiFileManager::mkdirr($TEMP_FILES_DIR, 0777);
+    	PiFileManager::mkdirr($TEMP_FILES_DIR);
     	//  we create single file from all input
     	$input_hash = sha1($content_js);
     	$file       = $TEMP_FILES_DIR . $input_hash . '.js';
@@ -71,7 +71,7 @@ class PiScriptManager extends AbstractFactory
     	if ( !file_exists($file) ) {
             $this->getContainer()
                     ->get('sfynx.tool.file_manager')
-                    ->save($file, $content_js, 0777);
+                    ->save($file, $content_js);
     	}
     	// we set result
     	$this->getContainer()

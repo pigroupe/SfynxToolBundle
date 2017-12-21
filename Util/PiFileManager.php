@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
  * <code>
  *     $fileFormatter    = $this-container->get('sfynx.tool.file_manager');
  * </code>
- * 
+ *
  * @category   Tool
  * @package    Util
  * @subpackage Service
@@ -38,13 +38,13 @@ use Symfony\Component\HttpFoundation\Response;
  * @link       http://opensource.org/licenses/gpl-license.php
  * @since      2015-02-16
  */
-class PiFileManager implements PiFileManagerBuilderInterface 
-{    
+class PiFileManager implements PiFileManagerBuilderInterface
+{
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     * @var ContainerInterface
      */
     protected $container;
-    
+
     /**
      * Constructor.
      *
@@ -54,7 +54,7 @@ class PiFileManager implements PiFileManagerBuilderInterface
     {
         $this->container = $container;
     }
-    
+
     /**
      * Returns the file in binary.
      *
@@ -69,8 +69,8 @@ class PiFileManager implements PiFileManagerBuilderInterface
         if (!empty($path)) {
             return file_get_contents($path);
         }
-    }    
-    
+    }
+
     /**
      * Returns the content by curl.
      *
@@ -96,20 +96,20 @@ class PiFileManager implements PiFileManagerBuilderInterface
     		}
     	}
         if (!empty($path)) {
-            //initialisation 
-            $ch = curl_init($path); 
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+            //initialisation
+            $ch = curl_init($path);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             if (!empty($proxy_host) && !empty($proxy_port)) {
-                curl_setopt($ch, CURLOPT_PROXY, $proxy_host.":".$proxy_port); 
-                curl_setopt($ch, CURLOPT_PROXYPORT, $proxy_port );                
+                curl_setopt($ch, CURLOPT_PROXY, $proxy_host.":".$proxy_port);
+                curl_setopt($ch, CURLOPT_PROXYPORT, $proxy_port );
             }
             $content = curl_exec($ch);
             curl_close($ch);
-            
+
             return $content;
         }
     }
-    
+
     /**
      * Retrieves the dirname of a file.
      *
@@ -122,13 +122,13 @@ class PiFileManager implements PiFileManagerBuilderInterface
     public static function getFileDirname($filename)
     {
     	return dirname($filename);
-    }    
-    
+    }
+
     /**
      * Retrieves the extension of a file.
      *
      * @param string $filename Nom du fichier
-     * 
+     *
      * @return string
      * @access public
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
@@ -137,12 +137,12 @@ class PiFileManager implements PiFileManagerBuilderInterface
     {
         return strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     }
-    
+
     /**
      * Returns the file name from full path.
      *
      * @param string $path  path du fichier
-     * 
+     *
      * @return string
      * @access public
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
@@ -153,7 +153,7 @@ class PiFileManager implements PiFileManagerBuilderInterface
             return basename($path);
         }
     }
-    
+
     /**
      * Find pathnames matching a pattern
      *
@@ -165,7 +165,7 @@ class PiFileManager implements PiFileManagerBuilderInterface
      * GLOB_NOESCAPE - Backslashes do not quote metacharacters
      * GLOB_BRACE - Expands {a,b,c} to match 'a', 'b', or 'c'
      * GLOB_ONLYDIR - Return only directory entries which match the pattern
-     * GLOB_ERR - Stop on read errors (like unreadable directories), by default errors are ignored. 
+     * GLOB_ERR - Stop on read errors (like unreadable directories), by default errors are ignored.
      *
      * @return array    array list of all files.
      * @access public
@@ -173,13 +173,12 @@ class PiFileManager implements PiFileManagerBuilderInterface
      */
     public static function GlobFiles($dirRegex, $options = null)
     {
-        if(is_null($options)) {
+        if((null === $options)) {
             return glob($dirRegex);
-        } else {
-            return glob($dirRegex, $options);
         }
+        return glob($dirRegex, $options);
     }
-    
+
     /**
      * Returns if a directory is empty.
      *
@@ -188,23 +187,23 @@ class PiFileManager implements PiFileManagerBuilderInterface
      * @return array    array list of all files.
      * @access public
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     public static function isEmptyDir($dir){
     	return (($files = @scandir($dir)) && count($files) <= 2);
-    }    
-    
+    }
+
     /**
      * Returns the names of files contained in a directory.
      *
      * @param string       $path             Path value
-     * @param boolean      $type Extension   Value of files that we want to search. 
+     * @param boolean      $type Extension   Value of files that we want to search.
      * @param false|string $appendPath       A append path value
      * @param boolean      $includeExtension The extension value
      *
      * @return array    array list of all files.
      * @access public
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     public static function getFilesByType($path, $type = false, $appendPath = false, $includeExtension = true)
     {
         if (is_dir($path)) {
@@ -217,7 +216,7 @@ class PiFileManager implements PiFileManagerBuilderInterface
                             $fileParts = explode('.', $file);
                             if (is_array($fileParts)) {
                                 $fileType = array_pop($fileParts);
-                                $file = implode('.', $fileParts);                                    
+                                $file = implode('.', $fileParts);
                                 //check whether the filetypes were passed as an array or string
                                 if (is_array($type)) {
                                     if (in_array($fileType, $type)) {
@@ -241,7 +240,7 @@ class PiFileManager implements PiFileManagerBuilderInterface
                             $returnFiles[] = $file;
                         }
                     }
-                }    
+                }
                 if ($returnFiles) {
                     sort($returnFiles);
                     return $returnFiles;
@@ -249,22 +248,23 @@ class PiFileManager implements PiFileManagerBuilderInterface
             }
         }
     }
-    
+
     /**
      * Returns the names of files contained in a directory and all subdirectories.
      *
      * @param string       $dir  Path
      * @param false|string $type Extension Value of files that we want to search.
+     * @param string $basedir
      *
      * @return array    array list of all files.
      * @access public
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
-    public static function ListFiles($dir, $type = false)
+     */
+    public static function ListFiles($dir, $type = false, $basedir = '')
     {
-        $files = Array();
-        if ($dh = @opendir($dir)) {    
-            $inner_files = Array();    
+        $files = [];
+        if ($dh = @opendir($dir)) {
+            $inner_files = [];
             while($file = readdir($dh)) {
                 if ($file != "." && $file != ".." && $file[0] != '.') {
                     if (is_dir($dir . "/" . $file)) {
@@ -273,53 +273,73 @@ class PiFileManager implements PiFileManagerBuilderInterface
                             $files = array_merge($files, $inner_files);
                         }
                     } else {
+                        $dir = $dir . "/";
+                        if (!empty($basedir)) {
+                            $dir = $basedir;
+                        }
                         if ($type) { //validate the type
                             $fileParts = explode('.', $file);
                             if (is_array($fileParts)) {
-                                $fileType = array_pop($fileParts);                                
-                                //check whether the filetypes were passed as an array or string
-                                if (is_array($type)) {
-                                    if (in_array($fileType, $type)) {
-                                        array_push($files, $dir . "/" . $file);
-                                    }
-                                } else {
-                                    if ($fileType == $type) {
-                                        array_push($files, $dir . "/" . $file);
-                                    }
+                                $fileType = array_pop($fileParts);
+                                if ((is_array($type)) && (in_array($fileType, $type))
+                                    || ($fileType == $type)
+                                ) { //check whether the filetypes were passed as an array or string
+                                    $file_path = $dir . $file;
                                 }
                             }
                         } else {
-                            array_push($files, $dir . "/" . $file);
+                            $file_path = $dir . $file;
                         }
+                        array_push($files, $file_path);
                     }
                 }
-            }    
+            }
             closedir($dh);
         }
-        
+
         return $files;
-    } 
+    }
 
     /**
      * Returns the names of files contained in a directory and all subdirectories of a bundle.
      *
-     * @param string $dir Path
-     * 
+     * @param string $dir
+     * @param string $fileType
+     * @param string $path ['absolute', 'teemplating', 'assetic']
+     *
      * @return array    array list of all files.
      * @access public
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
-    public function ListFilesBundle($dir)
+    public function ListFilesBundle($dir, $fileType = 'twig', $path = 'absolute')
     {
         $dir = trim(ltrim($dir, '/'));
-        $basePath1 = $this->container->get('kernel')->locateResource("@SfynxTemplateBundle/{$dir}");
-        $basePath2 = $this->container->get('kernel')->getBundle('SfynxTemplateBundle')->getPath() . "/" . $dir;
-        $listFiles1 = self::ListFiles($basePath1, 'twig');
-        $listFiles2 = array_merge($listFiles1, self::ListFiles($basePath2, 'twig'));
-        
-        return $listFiles2;
+        $files = [];
+        $prefix  = '';
+        $basedir = '';
+
+        $bundles = $this->container->getParameter('kernel.bundles');
+        foreach ($bundles as $bundleName => $bundleClass) {
+            $refClass = new \ReflectionClass($bundleClass);
+            $bundleDir = dirname($refClass->getFileName()) . "/" . $dir;
+            if ($path == 'templating') {
+                $pathinfo = pathinfo($refClass->getFileName());
+                $prefix   = $pathinfo['filename'];
+                $suffixe  = current(preg_split('/Resources\/views\//', $dir, -1, PREG_SPLIT_NO_EMPTY));
+                $basedir  = $prefix . ':' . $suffixe . ':';
+            }
+            if ($path == 'assetic') {
+                $pathinfo = pathinfo($refClass->getFileName());
+                $prefix   = str_replace('bundle', '', strtolower($pathinfo['filename']));
+                $suffixe  = current(preg_split('/Resources\/public\//', $dir, -1, PREG_SPLIT_NO_EMPTY));
+                $basedir  = '/bundles/' . $prefix . '/' . $suffixe;
+            }
+            $files = array_merge($files, self::ListFiles($bundleDir, $fileType, $basedir));
+        }
+
+        return $files;
     }
-    
+
     /**
      * Returns the names of all directories ans all subdirectories.
      *
@@ -333,10 +353,10 @@ class PiFileManager implements PiFileManagerBuilderInterface
      * @access public
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
-    public static function directoryScan($dir, $onlyfiles = false, $onlyDir = false, $fullpath = false, $ignorDirName = array()) 
+    public static function directoryScan($dir, $onlyfiles = false, $onlyDir = false, $fullpath = false, $ignorDirName = array())
     {
-        if (isset($dir) && is_readable($dir)) {                
-            $dlist = Array();
+        if (isset($dir) && is_readable($dir)) {
+            $dlist = [];
             $dir = realpath($dir);
             if ($onlyfiles) {
                 $objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir));
@@ -359,20 +379,20 @@ class PiFileManager implements PiFileManagerBuilderInterface
             }
             return $dlist;
         }
-    }    
-    
+    }
+
      /**
      * Parse a file and returns the contents
-     * 
+     *
      * @param string $file_code File name consists of: bundle_sfynxtemplate_css_screen__css for express this path : bundle/sfynxtemplate/css/screen.css
-     *  
+     *
      * @return string content of the file given in parameter.
      * @access public
      * @throws \InvalidArgumentException If fails parsing the string
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
     public function getContentCodeFile($file_code)
-    {        
+    {
         // We get the real path of the file
         $path = $this->decodeFilePath($file_code);
         // We get the content of the file
@@ -387,42 +407,42 @@ class PiFileManager implements PiFileManagerBuilderInterface
         } else {
             throw new \InvalidArgumentException('The $file argument "' . $ext_file .'" doesn\'t match a valid extension file');
         }
-        
-        return $response;        
-    }  
+
+        return $response;
+    }
 
     /**
      * Parse a file name coded and returns the real path
      *
      * @param string $file_code File name consists of: web_bundle_sfynxtemplate_css_screen__css for express this path : web/bundle/sfynxtemplate/css/screen.css
-     * 
+     *
      * @return string
      * @access private
      * @throws \Exception If fails parsing the string
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
-    private function decodeFilePath($file_code)
+     */
+    protected function decodeFilePath($file_code)
     {
         // dumb replacements
         list($dirs, $ext) = explode('__', $file_code);
-        $dirs         = explode('_', $dirs);    
+        $dirs         = explode('_', $dirs);
         // getting file's namespace is set
-        $namespace    = array_shift($dirs);    
+        $namespace    = array_shift($dirs);
         // building to the proper path
-        $root_dir    = $this->container->get('kernel')->getRootDir() . '/../' . $namespace . '/';        
+        $root_dir    = $this->container->get('kernel')->getRootDir() . '/../' . $namespace . '/';
         // returning realpath or throw everything to the trashcan
-        $realpath        = realpath($root_dir . implode('/', $dirs) . '.' . $ext);        
+        $realpath        = realpath($root_dir . implode('/', $dirs) . '.' . $ext);
         if ($realpath === false) {
             throw new \InvalidArgumentException('The $file argument "' . $file_code .'" doesn\'t match a valid file');
         }
-        
+
         return $realpath;
     }
 
     /**
      * Create a directory and all subdirectories needed.
      * @param string $pathname
-     * @param octal $mode example 0777
+     * @param octal $mode
      */
     public static function mkdirr($pathname, $mode = null)
     {
@@ -438,21 +458,16 @@ class PiFileManager implements PiFileManagerBuilderInterface
         $nextPathname = substr($pathname, 0, strrpos($pathname, "/"));
         if (self::mkdirr($nextPathname, $mode)) {
             if (!file_exists($pathname)) {
-                if (is_null($mode)) {
+                if ((null === $mode)) {
                     return mkdir($pathname);
-                } else {
-                    return mkdir($pathname, $mode);
                 }
+                return mkdir($pathname, $mode);
             }
-        } else {
-            throw new \Exception (
-                    "intermediate mkdirr $nextPathname failed"
-            );
         }
-        
+
         return false;
     }
-    
+
     /**
      * remove recursively directory
      * @param string $dir Physical directory to remove
@@ -473,7 +488,7 @@ class PiFileManager implements PiFileManagerBuilderInterface
             rmdir($dir);
         }
     }
-    
+
     /**
      * Save a content in the file given in parameter.
      *
@@ -482,25 +497,24 @@ class PiFileManager implements PiFileManagerBuilderInterface
      * @param integer $mode    mode file
      * @param integer $flags   [FILE_APPEND, LOCK_EX, FILE_APPEND | LOCK_EX]
      *
-     * @return booean    return 0 if the file is save correctly.    
+     * @return booean    return 0 if the file is save correctly.
      * @access public
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
-    public static function save($path, $content = '',  $mode = 0777, $flags = LOCK_EX)
+    public static function save($path, $content = '',  $mode = null, $flags = LOCK_EX)
     {
         if (self::mkdirr(dirname($path), $mode)) {
             return file_put_contents($path, $content, $flags);
-        } else {
-            return false;
         }
-    }   
+        return false;
+    }
 
     /**
      * rename the selected file
      *
      * @param string $source
      * @param string $newName
-     * 
+     *
      * @access public
      * @static
      * @author Etienne de Longeaux <etienne_delongeaux@hotmail.com>
@@ -511,13 +525,13 @@ class PiFileManager implements PiFileManagerBuilderInterface
             rename($source, $newName);
     	}
     }
-    
+
     /**
      * copy a file
      *
      * @param string $source
      * @param string $target
-     * 
+     *
      * @return bool
      * @access public
      * @static
@@ -529,13 +543,13 @@ class PiFileManager implements PiFileManagerBuilderInterface
             return copy($source, $target);
     	}
     }
-    
+
     /**
      * move a file
      *
      * @param string $source
      * @param string $target
-     * 
+     *
      * @access public
      * @static
      * @author Etienne de Longeaux <etienne_delongeaux@hotmail.com>
@@ -546,7 +560,7 @@ class PiFileManager implements PiFileManagerBuilderInterface
             rename($source, $target);
     	}
     }
-    
+
     /**
      * Delete a file.
      *
@@ -559,22 +573,21 @@ class PiFileManager implements PiFileManagerBuilderInterface
     public static function delete($path)
     {
         $dirpath = dirname($path);
-        if (@mkdir("$dirpath", 0777, true)) {}
+        if (@mkdir("$dirpath", null, true)) {}
         if (file_exists("$path")){
             unlink($path);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
-    
+
     /**
      * Create a file.
      *
      * @param string $path        Path du fichier
      * @param string $filecontent Content à inserer
      * @param string $mode        Mode parameter of the fopen php function
-     * 
+     *
      * @return void
      * @access public
      * @static
@@ -583,21 +596,21 @@ class PiFileManager implements PiFileManagerBuilderInterface
     public static function create($path, $filecontent = '', $mode = "w+")
     {
     	$dirpath = dirname($path);
-    	if(@mkdir("$dirpath", 0777, true)) {}    
+    	if(@mkdir("$dirpath", null, true)) {}
     	if(!file_exists("$path")) {
             $fp = fopen($path, $mode);
             fwrite($fp,$filecontent,strlen($filecontent));
             fclose($fp);
     	}
-    }    
-    
+    }
+
     /**
      * Insert content in file.
      *
      * @param string  $path        Path du fichier
      * @param string  $filecontent Contenu à injecter dans le fichier
      * @param string  $mode        Mode parameter of the fopen php function
-     * 
+     *
      * @return void
      * @access public
      * @static
@@ -605,12 +618,12 @@ class PiFileManager implements PiFileManagerBuilderInterface
      */
     public static function InsererContent($path, $filecontent, $mode = "w+")
     {
-    	$contents = file_get_contents($path);    	 
+    	$contents = file_get_contents($path);
     	$fp = fopen($path, $mode);
     	fwrite($fp,$contents . $contenu,strlen($contents . $contenu));
     	fclose($fp);
-    }    
-    
+    }
+
     /**
      * Replace a particular line in a text file with less memory intensive.
      *
@@ -644,8 +657,8 @@ class PiFileManager implements PiFileManagerBuilderInterface
         } else {
           unlink($path.'.tmp');
         }
-    }    
-    
+    }
+
     /**
      * send the content of a file to the output by chuncks in order to
      * limite the memory consumption.
@@ -655,96 +668,83 @@ class PiFileManager implements PiFileManagerBuilderInterface
      */
     public static function readFileChunked($filename, $retbytes = true, $optional_headers = null, $username = null, $password = null)
     {
-            if($username !== null)
-            {
-                    if($optional_headers === null)
-                    {
-                            $optional_headers = '';
-                    }
-                    $optional_headers = "Authorization: Basic " . base64_encode($username . ':' . $password) . "\r\n" . $optional_headers;
+        if ($username !== null) {
+            if ($optional_headers === null) {
+                $optional_headers = '';
             }
+            $optional_headers = "Authorization: Basic " . base64_encode($username . ':' . $password) . "\r\n" . $optional_headers;
+        }
 
-            if($optional_headers !== null)
-            {
-                    $params['http']['header'] = $optional_headers;
-            }
+        if($optional_headers !== null) {
+            $params['http']['header'] = $optional_headers;
+        }
+        $ctx = stream_context_create($params);
 
-            $ctx = stream_context_create($params);
+        $chunksize = 1*(1024*1024); // 1MB chunks - must be less than 2MB!
+        $buffer = '';
+        $cnt =0;
+        $handle = fopen($filename, 'rb', false, $ctx);
+        if ($handle === false) {
+            return false;
+        }
 
-            $chunksize = 1*(1024*1024); // 1MB chunks - must be less than 2MB!
-            $buffer = '';
-            $cnt =0;
-            $handle = fopen($filename, 'rb', false, $ctx);
-            if($handle === false)
-            {
-                    return false;
+        while(!feof($handle))
+        {
+            @set_time_limit(60*60); //reset time limit to 60 min - should be enough for 1 MB chunk
+            $buffer = fread($handle, $chunksize);
+            echo $buffer;
+            flush();
+            if ($retbytes) {
+               $cnt += strlen($buffer);
             }
-
-            while(!feof($handle))
-            {
-                    @set_time_limit(60*60); //reset time limit to 60 min - should be enough for 1 MB chunk
-                    $buffer = fread($handle, $chunksize);
-                    echo $buffer;
-                    flush();
-                    if ($retbytes)
-                    {
-                       $cnt += strlen($buffer);
-                    }
-            }
-            $status = fclose($handle);
-            if($retbytes && $status)
-            {
-                    return $cnt; // return num. bytes delivered like readfile() does.
-            }
-            return $status;
+        }
+        $status = fclose($handle);
+        if($retbytes && $status) {
+            return $cnt; // return num. bytes delivered like readfile() does.
+        }
+        return $status;
     }
 
 
     public static function copyFileChunked($filename, $destinationResource, $optional_headers = null, $username = null, $password = null)
     {
-            if($username !== null)
-            {
-                    if($optional_headers === null)
-                    {
-                            $optional_headers = '';
-                    }
-                    $optional_headers = "Authorization: Basic " . base64_encode($username . ':' . $password) . "\r\n" . $optional_headers;
+        if($username !== null) {
+            if($optional_headers === null) {
+                $optional_headers = '';
             }
+            $optional_headers = "Authorization: Basic " . base64_encode($username . ':' . $password) . "\r\n" . $optional_headers;
+        }
 
-            if($optional_headers !== null)
-            {
-                    $params['http']['header'] = $optional_headers;
-            }
+        if($optional_headers !== null) {
+            $params['http']['header'] = $optional_headers;
+        }
 
-            $ctx = stream_context_create($params);
+        $ctx = stream_context_create($params);
 
-            $chunksize = 1*(1024*1024); // 1MB chunks - must be less than 2MB!
-            $buffer = '';
-            $cnt =0;
-            $handle = fopen($filename, 'rb', false, $ctx);
-            if($handle === false)
-            {
-                    return false;
-            }
+        $chunksize = 1*(1024*1024); // 1MB chunks - must be less than 2MB!
+        $buffer = '';
+        $cnt =0;
+        $handle = fopen($filename, 'rb', false, $ctx);
+        if($handle === false) {
+            return false;
+        }
 
-            while(!feof($handle))
-            {
-                    @set_time_limit(60*60); //reset time limit to 60 min - should be enough for 1 MB chunk
-                    $buffer = fread($handle, $chunksize);
-                    fwrite($destinationResource, $buffer);
-                    if ($retbytes)
-                    {
-                       $cnt += strlen($buffer);
-                    }
+        while(!feof($handle))
+        {
+            @set_time_limit(60*60); //reset time limit to 60 min - should be enough for 1 MB chunk
+            $buffer = fread($handle, $chunksize);
+            fwrite($destinationResource, $buffer);
+            if ($retbytes) {
+               $cnt += strlen($buffer);
             }
-            $status = fclose($handle);
-            if($retbytes && $status)
-            {
-                    return $cnt; // return num. bytes delivered like readfile() does.
-            }
-            return $status;
+        }
+        $status = fclose($handle);
+        if($retbytes && $status) {
+            return $cnt; // return num. bytes delivered like readfile() does.
+        }
+        return $status;
     }
-    
+
     /**
      *
      * @param $file file to send (typically an image)
@@ -759,15 +759,15 @@ class PiFileManager implements PiFileManagerBuilderInterface
             throw new \Exception(
                     "Download Manager : file [$file] doesn't exist"
             );
-        }    
+        }
         // ENO modif, required for IE
         if (ini_get('zlib.output_compression')) {
             ini_set('zlib.output_compression', 'Off');
-        }    
+        }
         $ctype = self::getMimeContentType($file);
         if ($mime != null) {
             $ctype = $mime;
-        }    
+        }
         header('Cache-Control: public, max-age='.$cacheTime);
         header('Expires: '.gmdate("D, d M Y H:i:s", time()+$cacheTime)." GMT");
         header('Pragma: cache');
@@ -779,7 +779,7 @@ class PiFileManager implements PiFileManagerBuilderInterface
         self::readfileChunked($file);
         exit;
     }
-    
+
     /**
      * returns the mime content type of a $file. Use file_info if it is
      * installed
@@ -791,8 +791,8 @@ class PiFileManager implements PiFileManagerBuilderInterface
         if (function_exists('mime_content_type')) {
             return mime_content_type($fileName);
         }
-    
-        $mimeTypes = array(
+
+        $mimeTypes = [
                 'txt' => 'text/plain',
                 'htm' => 'text/html',
                 'html' => 'text/html',
@@ -803,7 +803,7 @@ class PiFileManager implements PiFileManagerBuilderInterface
                 'xml' => 'application/xml',
                 'swf' => 'application/x-shockwave-flash',
                 'flv' => 'video/x-flv',
-    
+
                 // images
                 'png' => 'image/png',
                 'jpe' => 'image/jpeg',
@@ -816,37 +816,37 @@ class PiFileManager implements PiFileManagerBuilderInterface
                 'tif' => 'image/tiff',
                 'svg' => 'image/svg+xml',
                 'svgz' => 'image/svg+xml',
-    
+
                 // archives
                 'zip' => 'application/zip',
                 'rar' => 'application/x-rar-compressed',
                 'exe' => 'application/x-msdownload',
                 'msi' => 'application/x-msdownload',
                 'cab' => 'application/vnd.ms-cab-compressed',
-    
+
                 // audio/video
                 'mp3' => 'audio/mpeg',
                 'qt' => 'video/quicktime',
                 'mov' => 'video/quicktime',
                 'avi' => "video/x-msvideo",
-    
+
                 // adobe
                 'pdf' => 'application/pdf',
                 'psd' => 'image/vnd.adobe.photoshop',
                 'ai' => 'application/postscript',
                 'eps' => 'application/postscript',
                 'ps' => 'application/postscript',
-    
+
                 // ms office
                 'doc' => 'application/msword',
                 'rtf' => 'application/rtf',
                 'xls' => 'application/vnd.ms-excel',
                 'ppt' => 'application/vnd.ms-powerpoint',
-    
+
                 // open office
                 'odt' => 'application/vnd.oasis.opendocument.text',
                 'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
-    
+
                 // application store
                 // over the air blackberry
                 'jad' => 'text/vnd.sun.j2me.app-descriptor',
@@ -856,8 +856,8 @@ class PiFileManager implements PiFileManagerBuilderInterface
                 'apk' => 'application/vnd.android.package-archive',
                 // blackberry over the air
                 'jar' => 'application/java-archive'
-        );
-    
+        ];
+
         $ext = strtolower(pathinfo("$fileName", PATHINFO_EXTENSION));
         if (array_key_exists($ext, $mimeTypes)) {
             return $mimeTypes[$ext];
@@ -869,17 +869,17 @@ class PiFileManager implements PiFileManagerBuilderInterface
         }
         return 'application/octet-stream';
     }
-    
+
     /**
      * returns encode a sring in url
-     * 
+     *
      * @param string $value
      * @return string
      */
     public static function urlPathEncode($value)
     {
         // cas de la valeur null
-        if (is_null($value)) {
+        if ((null === $value)) {
             return "";
         }
         // plus d'accents
@@ -898,13 +898,13 @@ class PiFileManager implements PiFileManagerBuilderInterface
             },
             $value
         );
-        
+
         return $value;
     }
-    
+
     /**
      * generate a file path from an id.
-     * 
+     *
      *  @param string $mode
      *   @param int $id
      * @access public
@@ -940,7 +940,7 @@ class PiFileManager implements PiFileManagerBuilderInterface
     		$output.=$input{$len-1};
     	}
     	$output.='/';
-    	
+
     	return $mode.'/' . $output;
-    }    
+    }
 }

@@ -28,7 +28,7 @@ class PiDateExtension extends \Twig_Extension
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
-    
+
     /**
      * Constructor.
      *
@@ -38,7 +38,7 @@ class PiDateExtension extends \Twig_Extension
     {
         $this->container = $container;
     }
-        
+
     /**
      * Returns the name of the extension.
      *
@@ -50,10 +50,10 @@ class PiDateExtension extends \Twig_Extension
     public function getName() {
         return 'sfynx_tool_date_extension';
     }
-        
+
     /**
      * Returns a list of filters to add to the existing list.
-     * 
+     *
      * <code>
      *  {{ comment.created|created_ago }}
      *  {{ comment.created|localedate('long','medium', locale, 'EEEE d LLLL y') }}  to have a long date and medium time, in the current locale
@@ -63,26 +63,26 @@ class PiDateExtension extends \Twig_Extension
      *  {{ 'now' | convertToTimestamp  }}
      *  {{ 'December 20, 2011' | convertToTimestamp('en_GB')  }}
      * </code>
-     * 
+     *
      * @return array An array of filters
      * @access public
-     * 
+     *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
     public function getFilters()
     {
-        return array(
-            'created_ago'         => new \Twig_Filter_Method($this, 'createdAgoFilter'),
-        	'time_ago'     => new \Twig_Filter_Method($this, 'RelativeTimeFilter'),
-            'country'             => new \Twig_Filter_Method($this, 'countryFilter'),
-            'localedate'          => new \Twig_Filter_Method($this, 'localeDateFilter'),
-            'convertToDateTime'    => new \Twig_Filter_Method($this, 'convertToDattimeFilter'),
-            'convertMonthNumberToString'    => new \Twig_Filter_Method($this, 'convertMonthNumberToStringFilter'),
-            'convertToTimestamp'=> new \Twig_Filter_Method($this, 'convertToTimestampFilter'),
-            'next_date'        => new \Twig_Filter_Method($this, 'NextDateFilter'),
-        );
+        return [
+            new \Twig_SimpleFilter('created_ago', [$this, 'createdAgoFilter']),
+        	new \Twig_SimpleFilter('time_ago', [$this, 'RelativeTimeFilter']),
+            new \Twig_SimpleFilter('country', [$this, 'countryFilter']),
+            new \Twig_SimpleFilter('localedate', [$this, 'localeDateFilter']),
+            new \Twig_SimpleFilter('convertToDateTime', [$this, 'convertToDattimeFilter']),
+            new \Twig_SimpleFilter('convertMonthNumberToString', [$this, 'convertMonthNumberToStringFilter']),
+            new \Twig_SimpleFilter('convertToTimestamp', [$this, 'convertToTimestampFilter']),
+            new \Twig_SimpleFilter('next_date', [$this, 'NextDateFilter']),
+        ];
     }
-    
+
     /**
      * Returns a list of functions to add to the existing list.
      *
@@ -96,14 +96,14 @@ class PiDateExtension extends \Twig_Extension
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
     public function getFunctions() {
-        return array(
-                'months'         => new \Twig_Function_Method($this, 'allMonthsFunction'),
-        );
-    }    
-    
+        return [
+            new \Twig_SimpleFunction('months', [$this, 'allMonthsFunction']),
+        ];
+    }
+
     /**
      * Functions
-     */    
+     */
 
     /**
      * List of all months.
@@ -118,22 +118,22 @@ class PiDateExtension extends \Twig_Extension
     public function allMonthsFunction($locale)
     {
         return $this->container->get('sfynx.tool.date_manager')->allMonths($locale);
-    }  
-    
+    }
+
     /**
      * Filters
-     */    
-    
+     */
+
     public function convertToDattimeFilter($string)
     {
         return new \DateTime($string);
     }
-    
+
     public function convertMonthNumberToStringFilter($month_number)
     {
         return date( 'F', mktime(0, 0, 0, $month_number) );
-    }    
-    
+    }
+
     /**
      * Retourne litteralement une date.
      *
@@ -143,12 +143,12 @@ class PiDateExtension extends \Twig_Extension
      * @access public
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-     */    
+     */
     public function createdAgoFilter(\DateTime $dateTime)
     {
         return $this->container->get('sfynx.tool.date_manager')->createdAgoFilter($dateTime);
     }
-    
+
     /**
      * Returns the difference between the given timestamps and now or from.
      *
@@ -162,8 +162,8 @@ class PiDateExtension extends \Twig_Extension
     public function RelativeTimeFilter(\DateTime $dateTime, $from = null)
     {
     	return $this->container->get('sfynx.tool.date_manager')->RelativeTime($dateTime, $from);
-    }    
-    
+    }
+
     /**
      * Returns the difference between the given date and now or from.
      *
@@ -177,8 +177,8 @@ class PiDateExtension extends \Twig_Extension
     public function NextDateFilter(\DateTime $dateTime, $from = null)
     {
     	return $this->container->get('sfynx.tool.date_manager')->NextDate($dateTime, $from);
-    }    
-    
+    }
+
     /**
      * Translate a country indicator to its locale full name
      * Uses default system locale by default. Pass another locale string to force a different translation
@@ -186,21 +186,21 @@ class PiDateExtension extends \Twig_Extension
      * @param string $country The contry indicator
      * @param string $default The default value is the country does not exist (optionnal)
      * @param mixed $locale
-     * 
+     *
      * @return string The localized string
      * @access public
      * @static
-     * 
+     *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
     public function countryFilter($country, $default = '', $locale = null)
     {
         $locale    = $locale == null ? \Locale::getDefault() : $locale;
         $countries = Locale::getDisplayCountries($locale);
-    
+
         return array_key_exists($country, $countries) ? $countries[$country] : $default;
     }
-    
+
     /**
      * Translate a timestamp to a localized string representation.
      * Parameters dateType and timeType defines a kind of format. Allowed values are (none|short|medium|long|full).
@@ -217,13 +217,13 @@ class PiDateExtension extends \Twig_Extension
      * @return string The string representation
      * @access public
      * @static
-     * 
+     *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
     public function localeDateFilter($date, $dateType = 'medium', $timeType = 'none', $locale = null, $pattern = null)
     {
         return $this->container->get('sfynx.tool.date_manager')->format($date, $dateType, $timeType, $locale, $pattern);
-    }  
+    }
 
     /**
      * Parse a string representation of a date to a timestamp.
@@ -240,5 +240,5 @@ class PiDateExtension extends \Twig_Extension
     public function convertToTimestampFilter($date, $locale = null)
     {
             return $this->container->get('sfynx.tool.date_manager')->parseTimestamp($date, $locale);
-    }    
+    }
 }

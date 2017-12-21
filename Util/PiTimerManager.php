@@ -19,7 +19,7 @@ namespace Sfynx\ToolBundle\Util;
 
 use Sfynx\ToolBundle\Builder\PiTimerManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Sfynx\ToolBundle\Exception\ServiceException;
+use Sfynx\CoreBundle\Layers\Infrastructure\Exception\ServiceException;
 
 /**
  * Description of the Timer manager.
