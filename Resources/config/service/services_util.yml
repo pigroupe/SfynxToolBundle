@@ -26,75 +26,75 @@ services:
     # configuration of the Util classes
     # 
     sfynx.tool.mapper_collection:
-        class: %sfynx.tool.manager.mapper.class%  
+        class: '%sfynx.tool.manager.mapper.class%'
         
     sfynx.tool.manager.db:
-        class: %sfynx.tool.manager.db.class%
+        class: '%sfynx.tool.manager.db.class%'
         arguments: ['@service_container'] 
             
     sfynx.tool.array_manager:
-        class: %sfynx.tool.manager.array.class% 
+        class: '%sfynx.tool.manager.array.class%'
 
     sfynx.tool.string_manager:
-        class: %sfynx.tool.manager.string.class% 
+        class: '%sfynx.tool.manager.string.class%'
         
     sfynx.tool.string_cut_manager:
-        class: %sfynx.tool.manager.stringcut.class%
+        class: '%sfynx.tool.manager.stringcut.class%'
 
     sfynx.tool.date_manager:
-        class: %sfynx.tool.manager.date.class%    
+        class: '%sfynx.tool.manager.date.class%'
 
     sfynx.tool.file_manager:
-        class: %sfynx.tool.manager.file.class%  
+        class: '%sfynx.tool.manager.file.class%'
         arguments: ['@service_container']  
         
     sfynx.tool.file_sql_manager:
-        class: %sfynx.tool.manager.file_spl.class%  
-        arguments: [%kernel.cache_dir%, '@logger']         
+        class: '%sfynx.tool.manager.file_spl.class%'
+        arguments: ['%kernel.cache_dir%', '@logger']
         
     sfynx.tool.curl_manager:
-        class: %sfynx.tool.manager.curl.class%  
+        class: '%sfynx.tool.manager.curl.class%'
         arguments: ['@service_container']         
         
     sfynx.tool.script_manager:
-        class: %sfynx.tool.manager.script.class%  
+        class: '%sfynx.tool.manager.script.class%'
         arguments: ['@service_container']         
         
     sfynx.tool.regex_manager:
-        class: %sfynx.tool.manager.regex.class%  
+        class: '%sfynx.tool.manager.regex.class%'
         arguments: ['@service_container']  
         
     sfynx.tool.mailer_manager:
-        class: %sfynx.tool.manager.mailer.class%  
+        class: '%sfynx.tool.manager.mailer.class%'
         arguments: ['@service_container']
         
     sfynx.tool.rest_manager:
-        class: %sfynx.tool.manager.rest.class%
+        class: '%sfynx.tool.manager.rest.class%'
         
     sfynx.tool.log_manager:
-        class: %sfynx.tool.manager.log.class%      
-        arguments: [%kernel.logs_dir%, '@logger']     
+        class: '%sfynx.tool.manager.log.class%'
+        arguments: ['%kernel.logs_dir%', '@logger']
         
     sfynx.tool.timer_manager:
-        class: %sfynx.tool.manager.timer.class%      
+        class: '%sfynx.tool.manager.timer.class%'
         arguments: ['@service_container']         
         
     sfynx.tool.string_manager:
-        class: %sfynx.tool.manager.string.class%
+        class: '%sfynx.tool.manager.string.class%'
         
     sfynx.tool.encryption_manager:
-        class: %sfynx.tool.manager.encryption.class%      
+        class: '%sfynx.tool.manager.encryption.class%'
         
     sfynx.tool.random_manager:
-        class: %sfynx.tool.manager.random.class%      
+        class: '%sfynx.tool.manager.random.class%'
         
     #
     # configuration of the Util classes
     #         
     sfynx.tool.soapclient_manager:
-        class: %sfynx.tool.manager.soapclient.class%            
+        class: '%sfynx.tool.manager.soapclient.class%'
         arguments: ['@service_container'] 
         
     synx.tool.soapclient_proxy:
-        class: %sfynx.tool.manager.soapclient.proxy.class%
+        class: '%sfynx.tool.manager.soapclient.proxy.class%'
         arguments: ['@sfynx.tool.soapclient_manager']
