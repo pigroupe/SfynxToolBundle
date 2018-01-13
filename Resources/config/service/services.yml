@@ -13,6 +13,7 @@ services:
     #
     sfynx.tool.http_transport:
         class: GuzzleHttp\Client
+        public: true
         calls:
             - [ setDefaultOption, ['query', '%sfynx.tool.http_transport.config%'] ]
             
@@ -21,8 +22,10 @@ services:
     # 
     sfynx.tool.route.factory:
         class: '%sfynx.tool.route.factory.class%'
+        public: true
         arguments: ['@service_container']        
             
     sfynx.tool.route.cache:
         class: '%sfynx.tool.route.cache.class%'
+        public: true
         arguments: ['@service_container']
