@@ -93,11 +93,7 @@ services:
         class: '%sfynx.tool.manager.timer.class%'
         public: true
         arguments: ['@service_container']         
-        
-    sfynx.tool.string_manager:
-        class: '%sfynx.tool.manager.string.class%'
-        public: true
-        
+
     sfynx.tool.encryption_manager:
         class: '%sfynx.tool.manager.encryption.class%'
         public: true
