@@ -14,15 +14,15 @@ services:
     sfynx.tool.http_transport:
         class: GuzzleHttp\Client
         calls:
-            - [ setDefaultOption, ['query', %sfynx.tool.http_transport.config%] ] 
+            - [ setDefaultOption, ['query', '%sfynx.tool.http_transport.config%'] ]
             
     #
     # configuration of the route manager
     # 
     sfynx.tool.route.factory:
-        class: %sfynx.tool.route.factory.class%
+        class: '%sfynx.tool.route.factory.class%'
         arguments: ['@service_container']        
             
     sfynx.tool.route.cache:
-        class: %sfynx.tool.route.cache.class%
+        class: '%sfynx.tool.route.cache.class%'
         arguments: ['@service_container']
