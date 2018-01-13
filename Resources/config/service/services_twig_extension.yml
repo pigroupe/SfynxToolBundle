@@ -14,16 +14,19 @@ services:
     #
     twig.extension.text:
        class: Twig_Extensions_Extension_Text
+       public: true
        tags:
            - { name: 'twig.extension' }
 
     twig.extension.intl:
        class: Twig_Extensions_Extension_Intl
+       public: true
        tags:
            - { name: 'twig.extension' }
 
     twig.extension.loader:
         class: Twig_Extension_StringLoader
+        public: true
         tags:
            - { name: 'twig.extension' }
 
@@ -32,48 +35,56 @@ services:
     #
     sfynx.tool.twig.extension.forward:
         class: '%sfynx.tool.twig.extension.forward.class%'
+        public: true
         arguments: ['@service_container']
         tags:
             - { name: 'twig.extension' }
 
     sfynx.tool.twig.extension.service:
         class: '%sfynx.tool.twig.extension.service.class%'
+        public: true
         arguments: ['@service_container']
         tags:
             - { name: 'twig.extension' }
 
     sfynx.tool.twig.extension.jquery:
         class: '%sfynx.tool.twig.extension.jquery.class%'
+        public: true
         arguments: ['@service_container', '@translator']
         tags:
             - { name: 'twig.extension' }
 
     sfynx.tool.twig.extension.date:
         class: '%sfynx.tool.twig.extension.date.class%'
+        public: true
         arguments: ['@service_container']
         tags:
             - { name: 'twig.extension' }
 
     sfynx.tool.twig.extension.tool:
         class: '%sfynx.tool.twig.extension.tool.class%'
+        public: true
         arguments: ['@service_container']
         tags:
             - { name: 'twig.extension' }
 
     sfynx.tool.twig.extension.route:
         class: '%sfynx.tool.twig.extension.route.class%'
+        public: true
         arguments: ['@service_container']
         tags:
             - { name: 'twig.extension' }
 
     sfynx.tool.twig.extension.form:
         class: '%sfynx.tool.twig.extension.form.class%'
+        public: true
         arguments: ['@service_container']
         tags:
             - { name: 'twig.extension' }
 
     sfynx.tool.twig.extension.layouthead:
         class: '%sfynx.tool.twig.extension.layouthead.class%'
+        public: true
         arguments: ['@service_container']
         tags:
             - { name: 'twig.extension' }
