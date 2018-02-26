@@ -4,7 +4,7 @@
   "description": "This Bundle provides tool libraries and services of route and role and twig extensions.",
   "keywords": ["route", "role", "soap", "file", "regex", "date", "encryption", "curl", "random"],
   "homepage": "http://pigroupe.github.io/cmf-sfynx/",
-  "license": "LGPL-3.0+",
+  "license": "LGPL-3.0-or-latter",
   "authors": [
     {
       "name": "Etienne de Longeaux",
