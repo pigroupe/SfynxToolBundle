@@ -505,7 +505,10 @@ class PiArrayManager implements PiArrayManagerBuilderInterface
                 if (is_array($value)) {
                     $data->$key = self::array_to_object($value);
                 } else {
-                    $data->$key = ($value === 'true' || $value === 'false' ? (bool)$value : $value);
+                    $value = in_array(strtolower(trim($value)), ['false']) ? false : $value;
+                    $value = in_array(strtolower(trim($value)), ['true']) ? true : $value;
+
+                    $data->$key = $value;
                 }
             }
         }
@@ -541,12 +544,16 @@ class PiArrayManager implements PiArrayManagerBuilderInterface
                 && isset ($merged[$key])
                 && is_array ($merged[$key])
             ) {
-                $merged [$key] = self::array_merge_recursive_distinct($merged [$key], $value);
+                $merged[$key] = self::array_merge_recursive_distinct($merged [$key], $value);
             } else {
-                $merged [$key] = ($value === 'true' || $value === 'false' ? (bool)$value : $value);
+                $value = in_array(strtolower(trim($value)), ['false']) ? false : $value;
+                $value = in_array(strtolower(trim($value)), ['true']) ? true : $value;
+
+                $merged[$key] = $value;
             }
         }
 
         return $merged;
     }
+
 }

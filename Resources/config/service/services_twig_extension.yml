@@ -24,11 +24,16 @@ services:
        tags:
            - { name: 'twig.extension' }
 
-    twig.extension.loader:
-        class: Twig_Extension_StringLoader
-        public: true
+#    twig.extension.loader:
+#        class: Twig_Extension_StringLoader
+#        public: true
+#        tags:
+#           - { name: 'twig.extension' }
+
+    twig.string.loader:
+        class: 'Sfynx\ToolBundle\Twig\PiStringLoader'
         tags:
-           - { name: 'twig.extension' }
+            - { name: twig.loader }
 
     #
     # configuration of the sfynx extensions

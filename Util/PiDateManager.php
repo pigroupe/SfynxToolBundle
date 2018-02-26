@@ -100,8 +100,8 @@ class PiDateManager implements PiDateManagerBuilderInterface
                     $dateTimeObject = new $dateTimeClass($value, $timeZone);
                 }
             }
-        } catch (Exception $e) {
-            throw new \Exception('Error parsing date/time value: ' . var_export($value, true), $e);
+        } catch (\Exception $e) {
+            throw new \Exception('Error parsing date/time value: ' . var_export($value, true), $e->getCode());
         }
 
         return $dateTimeObject;
