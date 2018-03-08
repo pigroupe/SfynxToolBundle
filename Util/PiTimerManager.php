@@ -17,9 +17,9 @@
  */
 namespace Sfynx\ToolBundle\Util;
 
+use Symfony\Component\Console\Output\OutputInterface;
+
 use Sfynx\ToolBundle\Builder\PiTimerManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Sfynx\CoreBundle\Layers\Infrastructure\Exception\ServiceException;
 
 /**
  * Description of the Timer manager.
@@ -52,29 +52,24 @@ use Sfynx\CoreBundle\Layers\Infrastructure\Exception\ServiceException;
  */
 class PiTimerManager implements PiTimerManagerInterface
 {
-   /**
-    * @var \Symfony\Component\DependencyInjection\ContainerInterface
-    */
-   protected $container;
-   
-   /**
-    * @var array
-    */
-   protected $timer = null;   
-   
-   /**
-    * Constructor.
-    * 
-    * @param ContainerInterface $container The service container
-    * 
-    * @return void
-    * @access public
-    * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
-    */
-   public function __construct(ContainerInterface $container)
-   {
-        $this->container = $container;
-   }   
+    /** @var OutputInterface */
+    protected $output;
+    /** @var array */
+    protected $timer = null;
+
+    /**
+     * Constructor.
+     *
+     * @param ContainerInterface $container The service container
+     *
+     * @return void
+     * @access public
+     * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
+     */
+    public function __construct(OutputInterface $output = null)
+    {
+        $this->output = $output;
+    }
 
    /**
     * Flush the timer.
@@ -132,7 +127,11 @@ class PiTimerManager implements PiTimerManagerInterface
         if (isset($this->timer[$etag]['start'])) {
             $this->timer[$etag]['timer'] = microtime() - $this->timer[$etag]['start'];
             if ($print) {
-               print_r($this->timer[$etag]['timer']);
+                if (null !== $this->output) {
+                    $this->output->writeln($this->timer[$etag]['timer']);
+                } else {
+                    print_r($this->timer[$etag]['timer']);
+                }
             }
             
             return $this->timer[$etag]['timer'];            
