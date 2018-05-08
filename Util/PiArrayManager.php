@@ -17,6 +17,7 @@
  */
 namespace Sfynx\ToolBundle\Util;
 
+use stdClass;
 use Sfynx\ToolBundle\Builder\PiArrayManagerBuilderInterface;
 
 /**
@@ -258,13 +259,12 @@ class PiArrayManager implements PiArrayManagerBuilderInterface
         return $param;
     }
 
-
     /**
      * Convertir un tableau PHP en Javascript
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
-    public static function writeArray($aInput, $jsVarName = "name", $eol=PHP_EOL)
+    public static function writeArray($aInput, $jsVarName = "name", $eol = PHP_EOL)
     {
         $js = $jsVarName.'=new Array();'.$eol;
         foreach ($aInput as $key => $value) {
@@ -440,8 +440,6 @@ class PiArrayManager implements PiArrayManagerBuilderInterface
      * @param array        $Tableau
      * @param string    $Val
      * @return array
-     *
-     * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
     public static function findIndice($Tableau,$Val)
     {
@@ -492,27 +490,23 @@ class PiArrayManager implements PiArrayManagerBuilderInterface
     /**
      * Recursively convert a table into a stdClass object.
      *
-     * @param array $_ARRAY
-     * @return array
-     *
-     * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
+     * @param array $array
+     * @return stdClass
      */
-    public static function array_to_object($array)
+    public static function array_to_object(array $data): stdClass
     {
-        $data = new \stdClass ;
-        if (is_array($array) && !empty($array)){
-            foreach($array as $key => $value){
-                if (is_array($value)) {
-                    $data->$key = self::array_to_object($value);
-                } else {
-                    $value = in_array(strtolower(trim($value)), ['false']) ? false : $value;
-                    $value = in_array(strtolower(trim($value)), ['true']) ? true : $value;
+        return json_decode(json_encode($data), false);
+    }
 
-                    $data->$key = $value;
-                }
-            }
-        }
-        return $data ;
+    /**
+     * Recursively convert a table into a stdClass object.
+     *
+     * @param stdClass $object
+     * @return array
+     */
+    public static function object_to_array(\stdClass $object): array
+    {
+        return json_decode(json_encode($object), true);
     }
 
     /**
