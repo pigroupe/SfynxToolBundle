@@ -17,6 +17,8 @@
  */
 namespace Sfynx\ToolBundle\Builder;
 
+use stdClass;
+
 /**
  * Array builder interface.
  *
@@ -43,5 +45,20 @@ interface PiArrayManagerBuilderInterface
     public static function writeArray($aInput, $jsVarName, $eol=PHP_EOL);
     public static function InnerHTML($HTML,$Balise,$Prem_val='',$Affiche_prems=true,$Nbre_bal=0);
     public static function findIndice($Tableau,$Val);
-    public static function array_to_object($array);
+
+    /**
+     * Recursively convert a table into a stdClass object.
+     *
+     * @param array $array
+     * @return stdClass
+     */
+    public static function array_to_object(array $data): stdClass;
+
+    /**
+     * Recursively convert a table into a stdClass object.
+     *
+     * @param stdClass $object
+     * @return array
+     */
+    public static function object_to_array(\stdClass $object): array;
 }
