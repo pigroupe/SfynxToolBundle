@@ -26,9 +26,9 @@ use Sfynx\ToolBundle\Builder\PiEncryptionBuilderInterface;
  *     $encryption    = $this-container->get('sfynx.tool.encryption_manager');
  *
  *     {% for url in obfuscateLinks %}
- *     <span class="{{ url| obfuscateLink }} hiddenLink coincoin prout"></span>
+ *     <span class="{{ url| obfuscateLink }} hiddenLink" style="display:none"></span>
  *     {% endfor %}
- *     {{ obfuscateLinkJS('a','hiddenLink')|raw }}
+ *     {{ obfuscateLinkJS('a','hiddenLink')|raw }} or {{ obfuscateLinkJS('img','hiddenLink')|raw }}
  *
  *
  *     <span frameborder="0" scrolling="no" width="805px" height="800px"  data-sort="3" data-hashtag="myBudget" class="hiddenLinkIframe {{ url|obfuscateLink }}" />
@@ -410,10 +410,10 @@ class PiEncryption implements PiEncryptionBuilderInterface
                                 link.href       = decoded;
                                 <?php endif; ?>
 
-                                // var attributes = $(span).prop("attributes");
-                                // $.each(attributes, function() {
-                                //     link.setAttribute(this.name, this.value);
-                                // });
+                                var attributes = $(span).prop("attributes");
+                                $.each(attributes, function() {
+                                    link.setAttribute(this.name, this.value);
+                                });
 
                                 if($(span).attr('target') == '_blank') { link.target = '_blank'; }
                                 link.innerHTML  = span.innerHTML;
