@@ -24,8 +24,12 @@ use Sfynx\ToolBundle\Builder\PiEncryptionBuilderInterface;
  *
  * <code>
  *     $encryption    = $this-container->get('sfynx.tool.encryption_manager');
- *     
- *     <span class="hiddenLink {{ url|obfuscateLink }}">
+ *
+ *     {% for url in obfuscateLinks %}
+ *     <span class="{{ url| obfuscateLink }} hiddenLink" style="display:none"></span>
+ *     {% endfor %}
+ *     {{ obfuscateLinkJS('a','hiddenLink')|raw }} or {{ obfuscateLinkJS('img','hiddenLink')|raw }}
+ *
  *
  *     <span frameborder="0" scrolling="no" width="805px" height="800px"  data-sort="3" data-hashtag="myBudget" class="hiddenLinkIframe {{ url|obfuscateLink }}" />
  *     {{ obfuscateLinkJS('iframe','hiddenLinkIframe')|raw }}
@@ -343,78 +347,82 @@ class PiEncryption implements PiEncryptionBuilderInterface
      * @access public
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
-    public static function obfuscateLinkDecrypt($balise = "a", $class = "hiddenLink", $base16 = "0A12B34C56D78E9F")
+    public static function obfuscateLinkDecrypt($balise = 'a', $class = "hiddenLink", $base16 = "0A12B34C56D78E9F")
     {
     	// We open the buffer.
     	ob_start ();
     	?>
                     <script type="text/javascript">
                     //<![CDATA[
-                        jQuery(document).ready(function() {  
+                        jQuery(document).ready(function() {
                             var listitems = jQuery('.<?php echo $class; ?>').get();
-                            var index_ = 0;
-                            listitems.sort(function(a, b) {
-                                var hashtag = parsedURL.anchor ? '#'+parsedURL.anchor : null ;       //FORMAT HAS TO MATCH #AAAAA
-                                var hashtag_ = '#' + $(a).data('hashtag');
-                                var sort_a = parseInt($(a).data('sort'));
-                                var sort_b = parseInt($(b).data('sort'));
-                                if (hashtag == hashtag_) {
-                                    return 0;
-                                } else if ( (sort_a != undefined) && (sort_b != undefined) && (sort_a < sort_b) ) {
-                                    return sort_a;
-                                } else if ( (sort_a != undefined) && (sort_b != undefined) && (sort_a > sort_b) ) {
-                                    return sort_a;
-                                } else {
-                                    index_ = index_ +1;
-                                    return index_;
-                                }
-                            })
-                            $.each(listitems, function(index, span) { 
-                                    $(span).removeClass('<?php echo $class; ?>');
-            
-                                    var base16  = "<?php echo $base16; ?>";
-                                    var link    = document.createElement('<?php echo $balise; ?>');
-                                    var styles  = span.className.split(' ');
-                                    var encoded = styles[0];
-                                    var decoded = '';        
-                                    for (var i = 0; i < encoded.length; i += 2) {
-                                        var ch = base16.indexOf(encoded.charAt(i));
-                                        var cl = base16.indexOf(encoded.charAt(i+1));
-                                        decoded += String.fromCharCode((ch*16)+cl);
-                                    }        
-                                    styles.shift();
-                                    link.className  = styles.join(' ');
-                                    <?php if (in_array($balise, array('img', 'iframe', 'script'))) : ?>
-                                    link.src       = decoded;
-                                    <?php elseif (in_array($balise, array('div'))) : ?>
-                                    $(link).load( decoded );
-                                    <?php elseif (in_array($balise, array('ajax'))) : ?>
-                                        $.ajax({
-                                            type: "GET",
-                                            url: decoded,
-                                            async:  true // IMPORTANT !!! 
-                                        }).done(function(response) {
-                                            $(link).before(response);
-                                            $(link).remove();
-                                        }).complete(function(){
-                                        });
-                                    <?php else : ?>
-                                    link.href       = decoded;
-                                    <?php endif; ?>
-                                    
-                                    var attributes = $(span).prop("attributes");
-                                    $.each(attributes, function() {
-                                        link.setAttribute(this.name, this.value); 
-                                    });
+                            // var index_ = 0;
+                            // listitems.sort(function(a, b) {
+                            //     var hashtag = parsedURL.anchor ? '#'+parsedURL.anchor : null ;       //FORMAT HAS TO MATCH #AAAAA
+                            //     var hashtag_ = '#' + $(a).data('hashtag');
+                            //     var sort_a = parseInt($(a).data('sort'));
+                            //     var sort_b = parseInt($(b).data('sort'));
+                            //     if (hashtag == hashtag_) {
+                            //         return 0;
+                            //     } else if ( (sort_a != undefined) && (sort_b != undefined) && (sort_a < sort_b) ) {
+                            //         return sort_a;
+                            //     } else if ( (sort_a != undefined) && (sort_b != undefined) && (sort_a > sort_b) ) {
+                            //         return sort_a;
+                            //     } else {
+                            //         index_ = index_ +1;
+                            //         return index_;
+                            //     }
+                            // })
 
-                                    link.innerHTML  = span.innerHTML;
-            
-                                    $(span).replaceWith(link);                                
+                            $(listitems).each(function(index, span) {
+                                $(span).removeClass('hiddenLink');
+
+                                var base16  = "<?php echo $base16; ?>";
+                                var link    = document.createElement('<?php echo $balise; ?>');
+                                var styles  = span.className.split(' ');
+                                var encoded = styles[0];
+                                var decoded = '';
+
+                                // Decoding href. Source : @position
+                                for (var i = 0; i < encoded.length; i += 2) {
+                                    var ch = base16.indexOf(encoded.charAt(i));
+                                    var cl = base16.indexOf(encoded.charAt(i+1));
+                                    decoded += String.fromCharCode((ch*16)+cl);
+                                }
+
+                                styles.shift();
+                                link.className  = styles.join(' ');
+                                <?php if (in_array($balise, ['img', 'iframe', 'script'])) : ?>
+                                link.src       = decoded;
+                                <?php elseif (in_array($balise, ['div'])) : ?>
+                                $(link).load( decoded );
+                                <?php elseif (in_array($balise, ['ajax'])) : ?>
+                                    $.ajax({
+                                        type: "GET",
+                                        url: decoded,
+                                        async:  true // IMPORTANT !!!
+                                    }).done(function(response) {
+                                        $(link).before(response);
+                                        $(link).remove();
+                                    }).complete(function(){
+                                    });
+                                <?php else : ?>
+                                link.href       = decoded;
+                                <?php endif; ?>
+
+                                var attributes = $(span).prop("attributes");
+                                $.each(attributes, function() {
+                                    link.setAttribute(this.name, this.value);
+                                });
+
+                                if($(span).attr('target') == '_blank') { link.target = '_blank'; }
+                                link.innerHTML  = span.innerHTML;
+
+                                $(span).replaceWith(link);
                             });
                         });
                     //]]>
                     </script>
-                    
         <?php 
         // We retrieve the contents of the buffer.
         $_content = ob_get_contents ();
@@ -423,6 +431,6 @@ class PiEncryption implements PiEncryptionBuilderInterface
         // We close the buffer.
         ob_end_flush ();
                 
-        return $_content;                                
+        return $_content;
     }     
 }
