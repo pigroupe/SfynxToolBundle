@@ -475,11 +475,10 @@ class PiArrayManager implements PiArrayManagerBuilderInterface
             return $Code;
         }
 
-        foreach($Tableau as $Cle=>$Valeur)
-        {
+        foreach($Tableau as $Cle=>$Valeur) {
             if ($Drapeau==true) break;//break; Pour remonter l'arborescence d'appel de la fonction en gardant le résultat
 
-            if (is_array($Valeur)){
+            if (is_array($Valeur)) {
                 $Result[]=$Cle; //$Result[]=$Cle: On rajoute l'indice parcouru dans le tableau de résultats
                 $Result=self::findIndice($Valeur,$Val);
             }

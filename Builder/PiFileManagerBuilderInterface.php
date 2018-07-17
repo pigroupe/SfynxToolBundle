@@ -57,4 +57,12 @@ interface PiFileManagerBuilderInterface
     public static function getMimeContentType($fileName);
     public static function urlPathEncode($value);
     public static function generatePath($mode, $id);
+
+    /**
+     * Formatting the unit the size of a file
+     *
+     * @param int $size
+     * @return float|int|string
+     */
+    public static function formattingUnitOfSize(int $size);
 }
