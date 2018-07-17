@@ -344,7 +344,8 @@ class PiRegexManager implements PiRegexManagerBuilderInterface
      *
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */    
-    public static function hex2rgb($color){
+    public static function hex2rgb($color)
+    {
         if (preg_match("@#[a-f0-9]{6}@i",$color)){
             /* On isole chaque caractère de la chaine hexadécimale par couleur */
             $r = substr($couleur, 1, 2);
@@ -356,8 +357,9 @@ class PiRegexManager implements PiRegexManagerBuilderInterface
             $bleu  = hexdec($b);
             /* On reconstruit la chaine en valeur rgb. */
             return array('r'=>$rouge,'g'=>$vert,'b'=>$bleu);
-        }else
-            return false;
+        }
+
+        return false;
     }
 }
 

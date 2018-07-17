@@ -83,18 +83,18 @@ class PiFileManager implements PiFileManagerBuilderInterface
      */
     public static function getCurl($path, $proxy_host = null, $proxy_port = null, $getUriForPath = false)
     {
-    	if ($getUriForPath) {
-    		$path = str_replace(array("://"), array(":||"), $path);
-    		$path = str_replace(array("//"), array("/"), $path);
-    		$path = str_replace(array(":||"), array("://"), $path);
-    		if (preg_match("#^\/(.*)$#i", $path)) {
-    			$path = $getUriForPath . $path;
-    		} elseif (preg_match("#^www.(.*)$#i", $path)) {
-    			$path = "http://" . $path;
-    		} elseif (preg_match("#^(?!http|ftp?)#i", $path)) {
-    			$path = "http://" . $path;
-    		}
-    	}
+        if ($getUriForPath) {
+            $path = str_replace(array("://"), array(":||"), $path);
+            $path = str_replace(array("//"), array("/"), $path);
+            $path = str_replace(array(":||"), array("://"), $path);
+            if (preg_match("#^\/(.*)$#i", $path)) {
+                $path = $getUriForPath . $path;
+            } elseif (preg_match("#^www.(.*)$#i", $path)) {
+                $path = "http://" . $path;
+            } elseif (preg_match("#^(?!http|ftp?)#i", $path)) {
+                $path = "http://" . $path;
+            }
+        }
         if (!empty($path)) {
             //initialisation
             $ch = curl_init($path);
@@ -121,7 +121,7 @@ class PiFileManager implements PiFileManagerBuilderInterface
      */
     public static function getFileDirname($filename)
     {
-    	return dirname($filename);
+        return dirname($filename);
     }
 
     /**
@@ -189,7 +189,7 @@ class PiFileManager implements PiFileManagerBuilderInterface
      * @author Etienne de Longeaux <etienne.delongeaux@gmail.com>
      */
     public static function isEmptyDir($dir){
-    	return (($files = @scandir($dir)) && count($files) <= 2);
+        return (($files = @scandir($dir)) && count($files) <= 2);
     }
 
     /**
@@ -521,9 +521,9 @@ class PiFileManager implements PiFileManagerBuilderInterface
      */
     public static function rename($source, $newName)
     {
-    	if (file_exists($source)) {
+        if (file_exists($source)) {
             rename($source, $newName);
-    	}
+        }
     }
 
     /**
@@ -539,9 +539,9 @@ class PiFileManager implements PiFileManagerBuilderInterface
      */
     public static function copy( $source, $target)
     {
-    	if (file_exists( $source )) {
+        if (file_exists( $source )) {
             return copy($source, $target);
-    	}
+        }
     }
 
     /**
@@ -556,9 +556,9 @@ class PiFileManager implements PiFileManagerBuilderInterface
      */
     public static function move($source, $target)
     {
-    	if (file_exists($source)) {
+        if (file_exists($source)) {
             rename($source, $target);
-    	}
+        }
     }
 
     /**
@@ -595,13 +595,13 @@ class PiFileManager implements PiFileManagerBuilderInterface
      */
     public static function create($path, $filecontent = '', $mode = "w+")
     {
-    	$dirpath = dirname($path);
-    	if(@mkdir("$dirpath", null, true)) {}
-    	if(!file_exists("$path")) {
+        $dirpath = dirname($path);
+        if(@mkdir("$dirpath", null, true)) {}
+        if(!file_exists("$path")) {
             $fp = fopen($path, $mode);
             fwrite($fp,$filecontent,strlen($filecontent));
             fclose($fp);
-    	}
+        }
     }
 
     /**
@@ -618,10 +618,10 @@ class PiFileManager implements PiFileManagerBuilderInterface
      */
     public static function InsererContent($path, $filecontent, $mode = "w+")
     {
-    	$contents = file_get_contents($path);
-    	$fp = fopen($path, $mode);
-    	fwrite($fp,$contents . $contenu,strlen($contents . $contenu));
-    	fclose($fp);
+        $contents = file_get_contents($path);
+        $fp = fopen($path, $mode);
+        fwrite($fp,$contents . $contenu,strlen($contents . $contenu));
+        fclose($fp);
     }
 
     /**
@@ -912,35 +912,61 @@ class PiFileManager implements PiFileManagerBuilderInterface
      */
     public static function generatePath($mode, $id)
     {
-    	$input=''.$id;
-    	// 15567    => /7/15/56/7/@/
-    	// 6871985  => /5/68/71/98/5/@/
-    	// 687198565   /5/68/71/98/56/5/@/
-    	// 68719856    /6/68/71/98/56/@/
-    	// 21          /1/21/@/
-    	// 2121        /1/21/21/@/
-    	// 1           /1/1/@
-    	// antix       /x/an/ti/x/@/
-    	$len=strlen($input);
-    	if ($len==0) {
-    		return $mode.'/';
-    	} elseif ($len==1) {
-    		$output=$input . '/' . $input;
-    	} else {
-    		$output=$input{$len-1} . '/';
-    		for ($i=0; $i<$len-1; $i++) {
-    			$output.=substr($input, $i, 1);
-    			if ($i%2) {
-    				$trailing='/';
-    			} else {
-    				$trailing='';
-    			}
-    			$output.=$trailing;
-    		}
-    		$output.=$input{$len-1};
-    	}
-    	$output.='/';
+        $input=''.$id;
+        // 15567    => /7/15/56/7/@/
+        // 6871985  => /5/68/71/98/5/@/
+        // 687198565   /5/68/71/98/56/5/@/
+        // 68719856    /6/68/71/98/56/@/
+        // 21          /1/21/@/
+        // 2121        /1/21/21/@/
+        // 1           /1/1/@
+        // antix       /x/an/ti/x/@/
+        $len=strlen($input);
+        if ($len==0) {
+            return $mode.'/';
+        } elseif ($len==1) {
+            $output=$input . '/' . $input;
+        } else {
+            $output=$input{$len-1} . '/';
+            for ($i=0; $i<$len-1; $i++) {
+                $output.=substr($input, $i, 1);
+                if ($i%2) {
+                    $trailing='/';
+                } else {
+                    $trailing='';
+                }
+                $output.=$trailing;
+            }
+            $output.=$input{$len-1};
+        }
+        $output.='/';
 
-    	return $mode.'/' . $output;
+        return $mode.'/' . $output;
+    }
+
+    /**
+     * Formatting the unit the size of a file
+     *
+     * @param int $size
+     * @return float|int|string
+     */
+    public static function formattingUnitOfSize(int $size)
+    {
+        $weight = 0;
+        $unit = '';
+        if ($size >= 1000000000) {
+            $weight = round($size/1000000000, 2);
+            $unit = ' Go';
+        } elseif ($size >= 1000000 && $size < 1000000000) {
+            $weight = round($size/1000000, 2);
+            $unit = ' Mo';
+        } else {
+            $weight = round($size/1000, 2);
+            $unit = ' Ko';
+        }
+        $point = strpos($weight,'.');
+        $weight = ($point >= 3) ? substr($weight, 0, 3).$unit : substr($weight, 0, 4).$unit;
+
+        return $weight;
     }
 }
