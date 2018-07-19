@@ -317,6 +317,28 @@ class PiArrayManager implements PiArrayManagerBuilderInterface
         return str_replace($prefix, '', $js);
     }
 
+    /**
+     * Convert a php array to a string array
+     *
+     * @param array $args
+     * @param string $result
+     * @static
+     * @return string
+     */
+    public static function recursiveArrayToString(array $args = [], string $result = '')
+    {
+        $result .= '[';
+        foreach ($args as $k => $value) {
+            $k = \is_string($k) ? "'$k'" : $k;
+            $value = \is_string($value) ? "'$value'" : $value;
+            $value = \is_array($value) ? self::recursiveArrayToString($value): $value;
+
+            $result .= "$k => " . $value . ', ';
+        }
+        $result .= ']';
+
+        return $result;
+    }
 
     /**
      * Extraction de contenu d'un tableau HTML.
